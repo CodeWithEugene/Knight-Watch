@@ -60,14 +60,14 @@ See [FEATURES.md](./FEATURES.md) for the full specification.
 ### Prerequisites
 
 - Node.js 18+
-- npm, pnpm, or yarn
+- pnpm (v9+ or v11+)
 
 ### Installation
 
 ```bash
 git clone https://github.com/CodeWithEugene/Campaign-Finance-Wach-Tool.git
 cd Campaign-Finance-Wach-Tool
-npm install
+pnpm install
 ```
 
 ### Environment Variables
@@ -80,7 +80,7 @@ cp .env.example .env
 
 | Variable | Description |
 |----------|-------------|
-| `NEXT_PUBLIC_CONVEX_URL` | Convex deployment URL (from [Convex Dashboard](https://dashboard.convex.dev) or after `npx convex dev`) |
+| `NEXT_PUBLIC_CONVEX_URL` | Convex deployment URL (from [Convex Dashboard](https://dashboard.convex.dev) or after `pnpm dlx convex dev`) |
 | `PAYSTACK_SECRET_KEY` | Paystack secret key |
 | `PAYSTACK_PUBLIC_KEY` | Paystack public key |
 | `NEXTAUTH_URL` | App URL (e.g. `http://localhost:3000`) |
@@ -94,9 +94,9 @@ Admin sign-in is at **`/{locale}/admin/login`** (e.g. [http://localhost:3000/en/
 
 **One-time setup:** seed the default admin so login works:
 
-1. Ensure Convex is in sync: run `npx convex dev` (or deploy), then in another terminal:
+1. Ensure Convex is in sync: run `pnpm dlx convex dev` (or deploy), then in another terminal:
    ```bash
-   npx convex run admins:seedDefaultAdmin
+   pnpm dlx convex run admins:seedDefaultAdmin
    ```
 2. Default credentials: **admin@cfwt.com** / **Admin123!**
 
@@ -104,7 +104,7 @@ Admin sign-in is at **`/{locale}/admin/login`** (e.g. [http://localhost:3000/en/
 
 1. Run Convex dev to create/link a project and generate types:
    ```bash
-   npx convex dev
+   pnpm dlx convex dev
    ```
 2. Set `NEXT_PUBLIC_CONVEX_URL` in `.env` (the URL printed by `convex dev` or from the [Convex Dashboard](https://dashboard.convex.dev)).
 3. Seed parties (Mchango dropdown): from the Convex Dashboard run the `parties:seed` mutation once, or call it from the app when the parties list is empty.
@@ -112,20 +112,20 @@ Admin sign-in is at **`/{locale}/admin/login`** (e.g. [http://localhost:3000/en/
 ### Run Locally
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 In another terminal, keep Convex in sync:
 
 ```bash
-npx convex dev
+pnpm dlx convex dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
 ### Deploying to Vercel
 
-1. Push to GitHub and import the repo in [Vercel](https://vercel.com). Vercel will detect Next.js and use `npm run build` by default.
+1. Push to GitHub and import the repo in [Vercel](https://vercel.com). Vercel detects `pnpm-lock.yaml` automatically and runs `pnpm install` and `pnpm run build`.
 2. **Environment variables** – In the Vercel project, go to **Settings → Environment Variables** and set at least:
    - **`NEXTAUTH_URL`** – Your production URL (e.g. `https://your-app.vercel.app`). Required for auth and redirects.
    - **`NEXTAUTH_SECRET`** or **`AUTH_SECRET`** – Same as local (e.g. `openssl rand -base64 32`).

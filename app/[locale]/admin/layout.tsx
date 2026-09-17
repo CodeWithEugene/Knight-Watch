@@ -1,6 +1,12 @@
+import type { Metadata } from 'next';
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { buildPageMetadata } from '@/lib/seo';
+
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  return buildPageMetadata({ locale: params.locale, routeKey: 'admin' });
+}
 
 export default async function AdminLayout({
   children,
@@ -20,7 +26,7 @@ export default async function AdminLayout({
   if (!isAdmin) redirect(`/${locale}`);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-8">
       <nav className="flex gap-4 mb-8 border-b border-[var(--border-color)] pb-4">
         <Link href={`/${locale}/admin`} className="font-bold text-[var(--accent-1)]">
           Dashboard

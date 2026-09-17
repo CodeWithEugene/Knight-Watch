@@ -11,17 +11,17 @@ export function VerificationBadge({ status }: VerificationBadgeProps) {
     verified: {
       icon: CheckCircle,
       label: 'Verified',
-      className: 'bg-green-500/20 text-green-600 dark:text-green-400',
+      className: 'bg-primary text-primary-foreground border border-primary/20',
     },
     under_review: {
       icon: Clock,
       label: 'Under review',
-      className: 'bg-yellow-500/20 text-yellow-600 dark:text-yellow-400',
+      className: 'bg-secondary text-secondary-foreground border border-border',
     },
     unverified: {
       icon: HelpCircle,
       label: 'Unverified',
-      className: 'bg-gray-500/20 text-gray-600 dark:text-gray-400',
+      className: 'bg-muted text-muted-foreground border border-border/50',
     },
   };
 

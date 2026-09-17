@@ -63,7 +63,7 @@ Thank you for your interest in contributing to the Campaign Finance Watch Tool. 
 ### Prerequisites
 
 - **Node.js** 18+ (LTS recommended)
-- **npm** or **pnpm** or **yarn**
+- **pnpm** (v9+ or v11+)
 - **Git**
 
 ### Getting Started
@@ -76,7 +76,7 @@ Thank you for your interest in contributing to the Campaign Finance Watch Tool. 
 
 2. **Install dependencies**:
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. **Set up environment variables**:
@@ -87,7 +87,7 @@ Thank you for your interest in contributing to the Campaign Finance Watch Tool. 
 
 4. **Run the development server**:
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 5. **Open** [http://localhost:3000](http://localhost:3000) in your browser.
@@ -122,8 +122,8 @@ See `.env.example` for the full list (create it if it doesn't exist).
 
 3. **Test your changes**:
    ```bash
-   npm run build
-   npm run lint
+   pnpm run build
+   pnpm run lint
    ```
 
 4. **Push to your fork**:

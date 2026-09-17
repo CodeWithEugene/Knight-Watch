@@ -4,9 +4,14 @@ import { useState, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { Card } from '@/components/ui/Card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { BrandLogo } from '@/components/layout/BrandLogo';
 import { validatePassword } from '@/lib/password';
 import { getSafeCallbackUrl } from '@/lib/authRedirect';
+import { ShieldCheck, Lock, Mail, User, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 function SignupForm() {
   const pathname = usePathname();
@@ -44,108 +49,131 @@ function SignupForm() {
       }
       const signInRes = await signIn('credentials', { email, password, redirect: false });
       if (signInRes?.error) {
-        setError('Account created but sign-in failed. Please try signing in.');
+        setError('Account created but automatic sign-in failed. Please sign in manually.');
         setLoading(false);
         return;
       }
       await router.push(callbackUrl);
       router.refresh();
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError('Something went wrong. Please check your connection and try again.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-16">
-      <div className="fade-in-up">
-        <h1 className="font-display font-black text-2xl mb-2">Sign up</h1>
-        <p className="text-[var(--text-secondary)] mb-6">
-          Create an account to access reports, map, dashboard, and more.
-        </p>
-        <Card>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Name (optional)</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-                className="w-full px-4 py-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]"
-                aria-describedby="password-requirements"
-              />
-              <p id="password-requirements" className="text-xs text-[var(--text-secondary)] mt-1 mb-1">
-                Must include:
-              </p>
-              <ul className="text-xs text-[var(--text-secondary)] list-disc list-inside space-y-0.5">
-                <li className={pwValidation.checks.minLength ? 'text-green-600 dark:text-green-400' : ''}>
-                  At least 8 characters{pwValidation.checks.minLength ? ' ✓' : ''}
-                </li>
-                <li className={pwValidation.checks.uppercase ? 'text-green-600 dark:text-green-400' : ''}>
-                  One uppercase letter{pwValidation.checks.uppercase ? ' ✓' : ''}
-                </li>
-                <li className={pwValidation.checks.lowercase ? 'text-green-600 dark:text-green-400' : ''}>
-                  One lowercase letter{pwValidation.checks.lowercase ? ' ✓' : ''}
-                </li>
-                <li className={pwValidation.checks.number ? 'text-green-600 dark:text-green-400' : ''}>
-                  One number{pwValidation.checks.number ? ' ✓' : ''}
-                </li>
-                <li className={pwValidation.checks.special ? 'text-green-600 dark:text-green-400' : ''}>
-                  One special character (!@#$%^&* etc.){pwValidation.checks.special ? ' ✓' : ''}
-                </li>
-              </ul>
-            </div>
-            {error && <p className="text-sm text-[var(--accent-2)]">{error}</p>}
-            <p className="text-xs text-[var(--text-secondary)]">
-              By signing up, you agree to our{' '}
-              <Link
-                href={`/${locale}/terms`}
-                className="text-[var(--accent-1)] font-medium hover:underline"
-              >
-                terms and conditions about data privacy
-              </Link>
-              .
-            </p>
-            <button
-              type="submit"
-              disabled={loading || !pwValidation.valid}
-              className="w-full py-3 bg-[var(--accent-1)] text-white font-bold rounded-lg disabled:opacity-50"
-            >
-              {loading ? 'Creating account...' : 'Sign up'}
-            </button>
+    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-6">
+        
+        {/* Logo & Headline */}
+        <div className="text-center space-y-2">
+          <div className="flex justify-center mb-2">
+            <BrandLogo size="lg" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-black font-display tracking-tight text-foreground">
+            Join Knight Watch
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Create an account to save favorite counties, set alerts, and track reports.
+          </p>
+        </div>
+
+        {/* Signup Card */}
+        <Card className="shadow-lg border-border/80">
+          <form onSubmit={handleSubmit}>
+            <CardHeader className="pb-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-bold">New Account Registration</CardTitle>
+                <Badge variant="outline" className="text-[10px] font-mono">
+                  CITIZEN ACCESS
+                </Badge>
+              </div>
+              <CardDescription className="text-xs">
+                Enter your details to create your secure profile.
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-4">
+              {error && (
+                <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg flex items-start gap-2 text-xs text-red-700 dark:text-red-300">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Full Name (Optional)</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Eugene Gabriel"
+                    className="pl-9 h-10 text-sm bg-card"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Email Address</label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="name@domain.ke"
+                    className="pl-9 h-10 text-sm bg-card"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Password</label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={8}
+                    placeholder="At least 8 characters"
+                    className="pl-9 h-10 text-sm bg-card"
+                  />
+                </div>
+                <p className="text-[11px] text-muted-foreground pt-0.5">
+                  Must include uppercase, lowercase, numbers, and at least 8 characters.
+                </p>
+              </div>
+
+              <div className="p-3 bg-muted/40 rounded-lg border border-border/60 text-[11px] text-muted-foreground flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-foreground shrink-0" />
+                <span>We respect your digital sovereignty. No spam, ever.</span>
+              </div>
+            </CardContent>
+
+            <CardFooter className="flex flex-col gap-3 pt-2">
+              <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
+                {loading ? 'Creating Account...' : 'Register Account'} <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+
+              <div className="text-center text-xs text-muted-foreground pt-1">
+                Already registered?{' '}
+                <Link
+                  href={`/${locale}/login`}
+                  className="text-primary font-semibold hover:underline"
+                >
+                  Sign in here
+                </Link>
+              </div>
+            </CardFooter>
           </form>
         </Card>
-        <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
-          Already have an account?{' '}
-          <Link
-            href={`/${locale}/login${callbackUrl !== `/${locale}` ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-            className="text-[var(--accent-1)] font-medium hover:underline"
-          >
-            Sign in
-          </Link>
-        </p>
+
       </div>
     </div>
   );
@@ -153,7 +181,11 @@ function SignupForm() {
 
 export default function SignupPage() {
   return (
-    <Suspense fallback={<div className="max-w-md mx-auto px-4 py-16 animate-pulse">Loading...</div>}>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground text-sm">Loading registration...</div>
+      </div>
+    }>
       <SignupForm />
     </Suspense>
   );

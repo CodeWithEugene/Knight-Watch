@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ancGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16A34A"/>
+      <stop offset="100%" stop-color="#15803D"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="#FFFFFF" stroke="#16A34A" stroke-width="8"/>
+  <!-- Peace Lamp / Lantern (Taa ya Amani) -->
+  <!-- Lamp Chimney / Glass -->
+  <path d="M85,75 L115,75 L125,120 L75,120 Z" fill="#FEF08A" stroke="#CA8A04" stroke-width="3"/>
+  <!-- Flame inside -->
+  <path d="M100,85 C95,95 90,105 100,115 C110,105 105,95 100,85 Z" fill="#EA580C"/>
+  <path d="M100,92 C98,98 96,105 100,112 C104,105 102,98 100,92 Z" fill="#FACC15"/>
+  <!-- Lamp Top Cap -->
+  <path d="M80,75 C80,65 120,65 120,75 Z" fill="#15803D"/>
+  <circle cx="100" cy="62" r="6" fill="#CA8A04"/>
+  <!-- Lamp Base -->
+  <path d="M70,120 L130,120 L135,138 L65,138 Z" fill="#15803D"/>
+  <rect x="75" y="138" width="50" height="6" fill="#CA8A04" rx="2"/>
+  <!-- Text -->
+  <text x="100" y="44" font-family="system-ui, sans-serif" font-weight="900" font-size="24" fill="#15803D" text-anchor="middle" letter-spacing="3">ANC</text>
+  <text x="100" y="176" font-family="system-ui, sans-serif" font-weight="700" font-size="11" fill="#CA8A04" text-anchor="middle" letter-spacing="1">AMANI NA USAWA</text>
+</svg>

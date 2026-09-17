@@ -11,9 +11,9 @@ export function EmbedAwareLayout({ children }: { children: React.ReactNode }) {
     return <div className="min-h-screen bg-[var(--bg-primary)]">{children}</div>;
   }
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col w-full">
       <Header />
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1 w-full">
         {children}
       </main>
       <Footer />

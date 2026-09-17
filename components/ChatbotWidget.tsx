@@ -243,7 +243,7 @@ export function ChatbotWidget() {
               <div
                 className={`max-w-[85%] rounded-xl px-4 py-2 text-sm ${
                   msg.role === 'user'
-                    ? 'bg-[var(--accent-1)] text-white'
+                    ? 'bg-primary text-primary-foreground'
                     : 'bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)]'
                 }`}
               >
@@ -304,7 +304,7 @@ export function ChatbotWidget() {
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="px-4 py-2 rounded-lg bg-[var(--accent-1)] text-white text-sm font-medium disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-1)]"
+              className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               Send
             </button>
@@ -320,7 +320,7 @@ export function ChatbotWidget() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-center w-14 h-14 rounded-full bg-[var(--accent-1)] text-white shadow-lg hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-1)] focus-visible:ring-offset-2"
+        className="flex items-center justify-center w-14 h-14 rounded-full bg-[var(--bg-secondary)] dark:bg-black border-2 border-[var(--accent-1)] dark:border-white text-[var(--accent-1)] dark:text-white shadow-lg hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-1)] focus-visible:ring-offset-2 transition-colors"
         aria-expanded={open}
         aria-label={open ? 'Close chat' : 'Open chat'}
       >

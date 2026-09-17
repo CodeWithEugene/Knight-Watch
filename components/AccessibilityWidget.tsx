@@ -401,7 +401,7 @@ export function AccessibilityWidget() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center justify-center w-14 h-14 rounded-full bg-[var(--bg-secondary)] border-2 border-[var(--accent-1)] shadow-lg hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-1)] focus-visible:ring-offset-2"
+        className="flex items-center justify-center w-14 h-14 rounded-full bg-[var(--bg-secondary)] dark:bg-black border-2 border-[var(--accent-1)] dark:border-white text-[var(--accent-1)] dark:text-white shadow-lg hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-1)] focus-visible:ring-offset-2 transition-colors"
         aria-expanded={open}
         aria-label={open ? 'Close accessibility options' : 'Open accessibility options'}
       >

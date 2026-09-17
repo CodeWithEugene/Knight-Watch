@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="#FFFFFF" stroke="#EA580C" stroke-width="8"/>
+  <!-- Orange Fruit -->
+  <circle cx="100" cy="115" r="50" fill="url(#orangeGrad)" stroke="#C2410C" stroke-width="3"/>
+  <!-- Orange Leaf -->
+  <path d="M100,68 C115,50 145,55 135,78 C120,85 105,78 100,68 Z" fill="#15803D" stroke="#166534" stroke-width="2"/>
+  <path d="M100,68 Q118,65 125,74" stroke="#86EFAC" stroke-width="2" fill="none"/>
+  <!-- Fruit stem -->
+  <path d="M98,72 Q100,64 104,60" stroke="#78350F" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <!-- Fruit highlight / dimples -->
+  <ellipse cx="80" cy="95" rx="10" ry="6" fill="#FDBA74" opacity="0.6" transform="rotate(-30 80 95)"/>
+  <!-- Text -->
+  <text x="100" y="42" font-family="system-ui, sans-serif" font-weight="900" font-size="26" fill="#EA580C" text-anchor="middle" letter-spacing="3">ODM</text>
+  <text x="100" y="182" font-family="system-ui, sans-serif" font-weight="700" font-size="10" fill="#1E3A8A" text-anchor="middle" letter-spacing="1">CHUNGWA MOJA</text>
+</svg>

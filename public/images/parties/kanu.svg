@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <circle cx="100" cy="100" r="95" fill="#B91C1C" stroke="#15803D" stroke-width="7"/>
+  <!-- Cockerel / Jogoo silhouette in White & Green -->
+  <!-- Comb -->
+  <path d="M98,62 C95,55 102,52 108,58 C112,50 120,52 122,60 C128,55 135,60 130,68 Z" fill="#FACC15"/>
+  <!-- Head & Beak -->
+  <path d="M98,65 C92,72 95,85 105,88 L85,82 L98,88 L108,95 C102,110 90,120 70,125 C85,128 105,125 118,112 C135,110 148,95 142,80 C138,70 125,65 110,65 Z" fill="#FFFFFF"/>
+  <polygon points="85,82 72,86 86,90" fill="#FACC15"/>
+  <!-- Eye -->
+  <circle cx="104" cy="74" r="3.5" fill="#B91C1C"/>
+  <!-- Tail Feathers -->
+  <path d="M125,108 C145,100 162,110 165,125 C155,120 145,122 135,128 Z" fill="#15803D"/>
+  <path d="M120,115 C138,115 152,125 152,138 C142,132 132,132 122,135 Z" fill="#FACC15"/>
+  <!-- Legs -->
+  <line x1="110" y1="125" x2="110" y2="148" stroke="#FACC15" stroke-width="4"/>
+  <line x1="118" y1="122" x2="120" y2="148" stroke="#FACC15" stroke-width="4"/>
+  <!-- Text -->
+  <text x="100" y="42" font-family="system-ui, sans-serif" font-weight="900" font-size="24" fill="#FFFFFF" text-anchor="middle" letter-spacing="3">KANU</text>
+  <text x="100" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="11" fill="#FACC15" text-anchor="middle" letter-spacing="1">BABA NA MAMA</text>
+</svg>

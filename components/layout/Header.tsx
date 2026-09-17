@@ -4,23 +4,12 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
-import { Menu, X, Search } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
+import { BrandLogo } from './BrandLogo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { Input } from '@/components/ui/input';
 import { MobileNav } from './MobileNav';
-import { getMessage } from '@/lib/i18n';
-
-const navLinkKeys = [
-  { href: '/learn', key: 'nav.learn' },
-  { href: '/intelligence', key: 'nav.intelligence' },
-  { href: '/report', key: 'nav.report' },
-  { href: '/mchango', key: 'nav.mchango' },
-  { href: '/map', key: 'nav.map' },
-  { href: '/dashboard', key: 'nav.dashboard' },
-  { href: '/reports', key: 'nav.reports' },
-  { href: '/transparency', key: 'nav.transparency' },
-  { href: '/calculator', key: 'nav.calculator' },
-];
 
 function getLocalizedHref(href: string, pathname: string | null): string {
   const locale = pathname?.split('/')[1] || 'en';
@@ -30,7 +19,7 @@ function getLocalizedHref(href: string, pathname: string | null): string {
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const locale = pathname?.split('/')[1] || 'en';
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,101 +31,134 @@ export function Header() {
     }
   };
 
-  return (
-    <header
-      className="sticky top-0 z-50 bg-[var(--bg-secondary)]/95 backdrop-blur-sm border-b border-[var(--border-color)]"
-      role="banner"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          <form
-            onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-xs mx-4"
-            role="search"
-          >
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={getMessage(locale, 'search.placeholder')}
-              className="w-full px-3 py-2 rounded-l-lg border border-[var(--border-color)] bg-[var(--bg-primary)] text-sm"
-              aria-label="Search reports"
-            />
-            <button
-              type="submit"
-              className="px-3 py-2 rounded-r-lg bg-[var(--accent-1)] text-white"
-              aria-label="Submit search"
-            >
-              <Search className="w-4 h-4" />
-            </button>
-          </form>
+  const isLinkActive = (href: string) => {
+    const normCurrent = pathname?.replace(/^\/[a-z]{2,3}/, '') || '/';
+    if (href === '/report') {
+      return normCurrent === '/report';
+    }
+    if (href === '/reports') {
+      return normCurrent === '/reports' || normCurrent.startsWith('/reports/');
+    }
+    return normCurrent === href || normCurrent.startsWith(href + '/');
+  };
 
+  const navLinks = [
+    { href: '/learn', label: 'Learn' },
+    { href: '/intelligence', label: 'Intelligence' },
+    { href: '/report', label: 'Report' },
+    { href: '/mchango', label: 'Mchango' },
+    { href: '/map', label: 'Map' },
+    { href: '/dashboard', label: 'Dashboard' },
+    { href: '/reports', label: 'Reports' },
+    { href: '/transparency', label: 'Transparency' },
+    { href: '/calculator', label: 'Calculator' },
+  ];
+
+  return (
+    <>
+      <header
+        className="fixed top-0 left-0 right-0 z-50 w-full bg-background transition-colors"
+        role="banner"
+      >
+      <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+        <div className="flex items-center justify-between h-16 gap-3">
+          {/* Brand Logo with icon and subtitle */}
+          <div className="shrink-0">
+            <BrandLogo locale={locale} />
+          </div>
+
+          {/* Desktop Navigation in requested sequence */}
           <nav
-            className="hidden lg:flex items-center gap-1"
+            className="hidden xl:flex items-center gap-1 2xl:gap-1.5 text-xs font-medium shrink-0"
             aria-label="Main navigation"
           >
-            {navLinkKeys.map((link) => (
+            {/* Home */}
+            <Link
+              href={`/${locale}`}
+              className={`px-2.5 py-1 2xl:px-3 2xl:py-1.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap ${
+                pathname === `/${locale}` || pathname === `/${locale}/`
+                  ? 'bg-accent text-accent-foreground font-semibold shadow-xs'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-accent'
+              }`}
+            >
+              Home
+            </Link>
+
+            {/* 1. Search reports... */}
+            <form onSubmit={handleSearch} className="relative flex items-center shrink-0">
+              <Search className="absolute left-2.5 size-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search reports..."
+                className="h-8 w-32 2xl:w-40 pl-8 pr-2 text-xs bg-muted/40 border-input placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring rounded-full"
+              />
+            </form>
+
+            {/* 2 - 10: Learn, Intelligence, Report, Mchango, Map, Dashboard, Reports, Transparency, Calculator */}
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={getLocalizedHref(link.href, pathname)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors min-h-[44px] flex items-center ${
-                  pathname?.includes(link.href)
-                    ? 'bg-[var(--accent-1)]/10 text-[var(--accent-1)]'
-                    : 'text-[var(--text-primary)] hover:bg-[var(--bg-primary)]'
+                className={`px-2.5 py-1 2xl:px-3 2xl:py-1.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap ${
+                  isLinkActive(link.href)
+                    ? 'bg-accent text-accent-foreground font-semibold shadow-xs'
+                    : 'text-foreground/80 hover:text-foreground hover:bg-accent'
                 }`}
               >
-                {getMessage(locale, link.key)}
+                {link.label}
               </Link>
             ))}
+
+            {/* 11. Sign out */}
+            <button
+              type="button"
+              onClick={() => {
+                if (status === 'authenticated') {
+                  signOut({ callbackUrl: `/${locale}` });
+                } else {
+                  signOut({ callbackUrl: `/${locale}/login` });
+                }
+              }}
+              className="px-2.5 py-1 2xl:px-3 2xl:py-1.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap text-foreground/80 hover:text-foreground hover:bg-accent cursor-pointer"
+            >
+              Sign out
+            </button>
+
+            {/* 12. Lang */}
+            <LanguageSwitcher />
+
+            {/* Theme Toggle */}
+            <ThemeToggle />
           </nav>
 
-          <div className="flex items-center gap-2">
-            {status === 'authenticated' ? (
-              <button
-                type="button"
-                onClick={() => signOut({ callbackUrl: `/${locale}` })}
-                className="hidden sm:block px-3 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--bg-primary)] rounded-lg"
-              >
-                Sign out
-              </button>
-            ) : (
-              <>
-                <Link
-                  href={`/${locale}/login`}
-                  className="hidden sm:block px-3 py-2 text-sm font-medium text-[var(--accent-1)] hover:bg-[var(--bg-primary)] rounded-lg"
-                >
-                  Sign in
-                </Link>
-                <Link
-                  href={`/${locale}/signup`}
-                  className="hidden sm:block px-3 py-2 text-sm font-medium bg-[var(--accent-1)] text-white rounded-lg hover:opacity-90"
-                >
-                  Sign up
-                </Link>
-              </>
-            )}
-            <LanguageSwitcher />
+          {/* Mobile Menu Trigger (active below xl breakpoint to protect alignment) */}
+          <div className="flex items-center gap-2 xl:hidden">
             <ThemeToggle />
             <button
+              type="button"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
-              className="lg:hidden p-2.5 rounded-lg min-w-[44px] min-h-[44px] flex items-center justify-center bg-[var(--bg-primary)] border border-[var(--border-color)]"
+              className="size-8 rounded-full border border-border bg-card hover:bg-accent text-foreground transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer shadow-xs"
             >
-              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
             </button>
           </div>
         </div>
       </div>
 
+      {/* Mobile Drawer */}
       <MobileNav
-        links={navLinkKeys.map((l) => ({
-          href: getLocalizedHref(l.href, pathname),
-          label: getMessage(locale, l.key),
-        }))}
         isOpen={mobileOpen}
         onClose={() => setMobileOpen(false)}
+        locale={locale}
+        pathname={pathname}
       />
     </header>
+    {/* Spacer so page content flows smoothly below fixed header */}
+    <div className="h-16 shrink-0 w-full pointer-events-none" aria-hidden="true" />
+  </>
   );
 }

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="dapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#15803D"/>
+      <stop offset="100%" stop-color="#166534"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="url(#dapGrad)" stroke="#7E22CE" stroke-width="7"/>
+  <!-- Leopard / Cat Head Silhouette in Gold & Black -->
+  <circle cx="100" cy="108" r="42" fill="#FACC15"/>
+  <!-- Ears -->
+  <polygon points="68,85 62,60 85,75" fill="#FACC15"/>
+  <polygon points="70,82 66,66 82,76" fill="#7E22CE"/>
+  <polygon points="132,85 138,60 115,75" fill="#FACC15"/>
+  <polygon points="130,82 134,66 118,76" fill="#7E22CE"/>
+  <!-- Eyes -->
+  <ellipse cx="85" cy="102" rx="6" ry="4" fill="#0F172A"/>
+  <ellipse cx="115" cy="102" rx="6" ry="4" fill="#0F172A"/>
+  <!-- Muzzle & Whiskers -->
+  <path d="M92,118 Q100,112 108,118" stroke="#0F172A" stroke-width="3" fill="none"/>
+  <polygon points="96,112 104,112 100,116" fill="#0F172A"/>
+  <line x1="72" y1="116" x2="52" y2="114" stroke="#0F172A" stroke-width="2"/>
+  <line x1="72" y1="120" x2="54" y2="124" stroke="#0F172A" stroke-width="2"/>
+  <line x1="128" y1="116" x2="148" y2="114" stroke="#0F172A" stroke-width="2"/>
+  <line x1="128" y1="120" x2="146" y2="124" stroke="#0F172A" stroke-width="2"/>
+  <!-- Spots -->
+  <circle cx="100" cy="88" r="3" fill="#0F172A"/>
+  <circle cx="92" cy="94" r="2.5" fill="#0F172A"/>
+  <circle cx="108" cy="94" r="2.5" fill="#0F172A"/>
+  <!-- Text -->
+  <text x="100" y="44" font-family="system-ui, sans-serif" font-weight="900" font-size="20" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">DAP-K</text>
+  <text x="100" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="10" fill="#FACC15" text-anchor="middle" letter-spacing="1">DEMOCRATIC ACTION</text>
+</svg>

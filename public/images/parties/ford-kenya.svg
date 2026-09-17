@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <linearGradient id="fordGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#047857"/>
+      <stop offset="100%" stop-color="#065F46"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="95" fill="url(#fordGrad)" stroke="#F59E0B" stroke-width="7"/>
+  <!-- Lion Profile Silhouette (Simba) in Gold -->
+  <path d="M70,85 C65,70 80,60 95,65 C110,60 135,70 140,85 C145,100 135,115 145,130 C130,135 118,125 105,130 C90,135 80,120 70,110 C62,100 68,92 70,85 Z" fill="#F59E0B"/>
+  <!-- Mane details -->
+  <path d="M75,90 Q85,105 78,120" stroke="#B45309" stroke-width="3" fill="none"/>
+  <path d="M88,80 Q98,95 90,115" stroke="#B45309" stroke-width="3" fill="none"/>
+  <path d="M102,75 Q115,90 108,118" stroke="#B45309" stroke-width="3" fill="none"/>
+  <circle cx="118" cy="85" r="4" fill="#065F46"/>
+  <!-- Text -->
+  <text x="100" y="45" font-family="system-ui, sans-serif" font-weight="900" font-size="18" fill="#F59E0B" text-anchor="middle" letter-spacing="1">FORD-KENYA</text>
+  <text x="100" y="178" font-family="system-ui, sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" text-anchor="middle" letter-spacing="2">SIMBA</text>
+</svg>

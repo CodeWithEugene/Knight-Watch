@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes';
 import { Sun, Moon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-export function ThemeToggle() {
+export function ThemeToggle({ className = '' }: { className?: string }) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -16,23 +16,26 @@ export function ThemeToggle() {
     return (
       <button
         aria-label="Toggle theme"
-        className="p-2.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] min-w-[44px] min-h-[44px]"
+        className={`size-8 rounded-full border border-border bg-background/50 flex items-center justify-center shrink-0 ${className}`}
       >
         <span className="sr-only">Loading theme</span>
       </button>
     );
   }
 
+  const isDark = theme === 'dark';
+
   return (
     <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      className="p-2.5 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-color)] hover:border-[var(--accent-1)] transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+      type="button"
+      onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      className={`size-8 rounded-full border border-input bg-background text-foreground flex items-center justify-center shrink-0 transition-all duration-200 hover:scale-105 active:scale-95 hover:bg-accent hover:text-accent-foreground hover:border-foreground/30 shadow-xs cursor-pointer ${className}`}
     >
-      {theme === 'dark' ? (
-        <Sun className="w-5 h-5" aria-hidden />
+      {isDark ? (
+        <Sun className="size-4 transition-transform duration-200" aria-hidden />
       ) : (
-        <Moon className="w-5 h-5" aria-hidden />
+        <Moon className="size-4 transition-transform duration-200" aria-hidden />
       )}
     </button>
   );

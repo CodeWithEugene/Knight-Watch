@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50" width="160" height="50" fill="none">
+  <g transform="translate(4, 5)">
+    <!-- Airtel icon symbol -->
+    <path d="M22.5 5.5 C19.2 1.5 13.5 0.2 8.5 2.1 C3.5 4.0 0 8.8 0 14.1 C0 19.8 4.2 24.5 9.8 25.1 C13.5 25.5 17.2 23.9 19.8 21.2 C21.1 19.8 22.1 18.2 22.8 16.5 C21.8 15.5 20.2 15.5 19.2 16.5 C17.2 18.5 14.2 19.8 11.2 19.2 C8.2 18.5 5.8 16.0 5.5 13.0 C5.2 9.5 7.8 6.5 11.2 6.0 C14.5 5.5 17.8 7.2 19.2 10.2 C20.0 12.0 21.8 12.8 23.5 12.0 C24.2 11.5 24.8 10.2 24.5 9.0 C24.2 7.8 23.5 6.5 22.5 5.5 Z" fill="#ED1B24"/>
+  </g>
+  <!-- airtel text -->
+  <text x="36" y="22" fill="#ED1B24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="16" letter-spacing="-0.5">airtel</text>
+  <!-- money text -->
+  <text x="36" y="34" fill="#ED1B24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="500" font-size="11" letter-spacing="0.2">money</text>
+</svg>

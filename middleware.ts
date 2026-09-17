@@ -20,6 +20,18 @@ function isProtectedPath(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // Bypass all static files, images, icons, and API routes
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/images') ||
+    pathname.startsWith('/icons') ||
+    pathname.includes('.') ||
+    pathname === '/favicon.ico'
+  ) {
+    return NextResponse.next();
+  }
+
   // Redirect bare root to default locale
   if (pathname === '/' || pathname === '') {
     return NextResponse.redirect(new URL('/en', request.url));
@@ -29,8 +41,7 @@ export async function middleware(request: NextRequest) {
   const pathnameHasLocale = isKnownLocale(firstSegment);
 
   // Only prefix with /en if the first segment is NOT already a known locale.
-  // This prevents accidentally double-prefixing paths like /fr/page → /en/fr/page.
-  if (!pathnameHasLocale && !pathname.startsWith('/api')) {
+  if (!pathnameHasLocale) {
     return NextResponse.redirect(new URL(`/en${pathname}`, request.url));
   }
 
@@ -52,5 +63,16 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - images (public images)
+     * - favicon.ico (favicon file)
+     * - public files with extensions (e.g. .png, .jpg, .svg, .ico, etc.)
+     */
+    '/((?!api|_next/static|_next/image|images|favicon\\.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|csv|docx?|xlsx?|zip|webmanifest|json)$).*)',
+  ],
 };

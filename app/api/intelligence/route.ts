@@ -45,14 +45,6 @@ Return ONLY a valid JSON array of such objects, no markdown or extra text. Maxim
 }
 
 export async function POST(request: NextRequest) {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return NextResponse.json(
-      { error: 'Intelligence API not configured (missing GEMINI_API_KEY)' },
-      { status: 503 }
-    );
-  }
-
   let body: { q?: string; type?: string; campaignPeriod?: string };
   try {
     body = await request.json();
@@ -90,6 +82,14 @@ export async function POST(request: NextRequest) {
   }
 
   // 2. Fallback: Gemini for entities not in prefilled set
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: 'Intelligence API not configured for custom entities (missing GEMINI_API_KEY)' },
+      { status: 503 }
+    );
+  }
+
   try {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({

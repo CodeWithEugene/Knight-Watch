@@ -3,11 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Globe } from 'lucide-react';
 import { KENYAN_LOCALES } from '@/lib/locales';
-import { getMessage } from '@/lib/i18n';
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ className = '' }: { className?: string }) {
   const pathname = usePathname();
   const currentLocale = pathname?.split('/')[1] || 'en';
   const pathWithoutLocale = pathname?.replace(/^\/[a-z]{2,3}/, '') || '/';
@@ -16,48 +15,61 @@ export function LanguageSwitcher() {
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
     }
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const currentName = KENYAN_LOCALES.find((l) => l.code === currentLocale)?.name ?? currentLocale;
-  const label = getMessage(currentLocale, 'lang.button');
+  const currentLocaleObj = KENYAN_LOCALES.find((l) => l.code === currentLocale);
+  const currentName = currentLocaleObj?.name ?? currentLocale;
 
   return (
-    <div className="relative" ref={ref}>
+    <div className={`relative inline-block text-left shrink-0 ${className}`} ref={ref}>
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium min-h-[44px] bg-[var(--bg-primary)] border border-[var(--border-color)] hover:bg-[var(--bg-secondary)]"
+        className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-medium text-foreground/80 hover:text-foreground hover:bg-accent border border-input bg-background transition-all duration-200 hover:scale-105 active:scale-95 hover:border-foreground/30 shadow-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={`${label}. Current: ${currentName}`}
+        aria-label={`Language selector. Current: ${currentName}`}
       >
-        <span>{label}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <Globe className="size-3 text-muted-foreground" />
+        <span>Lang</span>
+        <ChevronDown className={`size-3 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
-        <ul
+        <div
           role="listbox"
-          className="absolute right-0 top-full mt-1 py-1 min-w-[220px] max-h-[70vh] overflow-y-auto bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg shadow-lg z-[100]"
+          className="absolute right-0 top-full mt-1.5 w-48 max-h-72 overflow-y-auto rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-md z-50 focus:outline-none"
         >
-          {KENYAN_LOCALES.map((loc) => (
-            <li key={loc.code} role="option" aria-selected={currentLocale === loc.code}>
+          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            Select Language
+          </div>
+          {KENYAN_LOCALES.map((loc) => {
+            const isSelected = currentLocale === loc.code;
+            return (
               <Link
+                key={loc.code}
                 href={`/${loc.code}${pathWithoutLocale}`}
                 onClick={() => setOpen(false)}
-                className={`block px-4 py-2.5 text-sm hover:bg-[var(--bg-primary)] ${
-                  currentLocale === loc.code ? 'bg-[var(--accent-1)]/15 text-[var(--accent-1)] font-medium' : ''
+                role="option"
+                aria-selected={isSelected}
+                className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors hover:bg-accent hover:text-accent-foreground ${
+                  isSelected ? 'bg-accent font-semibold text-accent-foreground' : 'text-foreground'
                 }`}
               >
-                {loc.name}
+                <span>{loc.name}</span>
+                <span className="font-mono text-[10px] uppercase text-muted-foreground">
+                  {loc.code}
+                </span>
               </Link>
-            </li>
-          ))}
-        </ul>
+            );
+          })}
+        </div>
       )}
     </div>
   );

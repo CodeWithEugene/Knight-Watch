@@ -80,13 +80,13 @@ export default function MapComponent({
               <h3 className="font-bold text-sm">{report.title}</h3>
               <p className="text-xs text-gray-600">{report.category.replace(/-/g, ' ')}</p>
               <p className="text-xs">{report.county || report.location}</p>
-              <span className={`text-xs px-2 py-0.5 rounded ${report.status === 'verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+              <span className={`text-xs px-2 py-0.5 rounded font-medium ${report.status === 'verified' ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground border border-border'}`}>
                 {report.status.replace(/_/g, ' ')}
               </span>
               <div className="mt-2">
                 <Link
                   href={`/${locale}/reports/${report._id}`}
-                  className="text-xs font-medium text-[var(--accent-1)] hover:underline"
+                  className="text-xs font-semibold text-primary hover:underline"
                 >
                   View full report →
                 </Link>

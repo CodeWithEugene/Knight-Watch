@@ -121,9 +121,9 @@ export const CHATBOT_KNOWLEDGE: KnowledgeEntry[] = [
       "To **report** campaign finance misuse: (1) Use **Report** in the menu and fill the form (title, category, description, location). You can add photos or video and report **anonymously**. (2) **USSD**: dial the shortcode and follow the menu (language → category → description → location → confirm). (3) See the **SMS** instructions under Report for text reporting.",
   },
   {
-    keywords: ['ussd', 'shortcode', 'dial', '*384', 'feature phone'],
+    keywords: ['ussd', 'shortcode', 'dial', '*384', '*384*11400#', '11400', 'feature phone'],
     answer:
-      "**USSD reporting**: Dial the Campaign Finance Watch shortcode, choose language (English/Kiswahili), select a category (e.g. vote buying, misuse of public resources), enter a short description, then your county or town, and confirm. Your report is saved and reviewed. The callback is this app's /api/ussd endpoint.",
+      "**USSD reporting**: Dial **`*384*11400#`** from any phone in Kenya. Choose language (English/Kiswahili/Kikuyu/Kamba), select a category (e.g. vote buying, misuse of public resources), enter a short description, then your county or town, and confirm. Your report is securely logged with an audit receipt ID. The live gateway endpoint is `/api/ussd`.",
   },
   {
     keywords: ['sms', 'text message', 'shortcode sms'],

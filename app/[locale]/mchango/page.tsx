@@ -14,7 +14,6 @@ import {
   ArrowRight,
   CheckCircle2,
 } from 'lucide-react';
-import { PartyCardsScroll } from '@/components/mchango/PartyCardsScroll';
 import { MchangoModal } from '@/components/mchango/MchangoModal';
 import { KENYAN_PARTIES, getPartyBySlug } from '@/lib/partyData';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
@@ -33,7 +32,6 @@ function MchangoContent() {
   const partyParam = searchParams.get('party');
 
   const parties = useQuery(api.parties.list);
-  const totalsByParty = useQuery(api.contributions.totalsByParty, {}) ?? {};
   const seedParties = useMutation(api.parties.seed);
   const formSectionRef = useRef<HTMLDivElement>(null);
 
@@ -67,12 +65,6 @@ function MchangoContent() {
 
   const selectedPartyData = party ? getPartyBySlug(party) : null;
 
-  const handleDonateFromCard = (slug: string) => {
-    setParty(slug);
-    setError('');
-    setIsModalOpen(true);
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!party) {
@@ -95,8 +87,8 @@ function MchangoContent() {
 
       <div className="py-10 lg:py-16 space-y-12">
         {/* Header Title */}
-        <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 space-y-3">
-          <div className="flex items-center gap-2">
+        <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 space-y-3 text-center flex flex-col items-center">
+          <div className="flex items-center justify-center gap-2">
             <Badge variant="outline" className="font-mono text-xs">
               M-Pesa & Card Gateway
             </Badge>
@@ -107,19 +99,9 @@ function MchangoContent() {
           <h1 className="font-display font-black text-3xl sm:text-4xl text-foreground">
             Mchango — Public Campaign Crowdfunding
           </h1>
-          <p className="text-sm text-muted-foreground max-w-2xl">
+          <p className="text-sm text-muted-foreground max-w-2xl text-center">
             Support democratic political parties and candidates transparently. All contributions are processed through verified Paystack rails and logged on the public campaign finance tracker.
           </p>
-        </div>
-
-        {/* Scroll of Parties with Authentic Logos */}
-        <div className="max-w-full overflow-hidden">
-          <PartyCardsScroll
-            parties={partyList}
-            totalsByParty={totalsByParty}
-            onDonate={handleDonateFromCard}
-            locale={locale}
-          />
         </div>
 
         {/* Donation Form Container */}

@@ -112,8 +112,8 @@ export default function CalculatorPage() {
   return (
     <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 py-10 lg:py-16 space-y-10">
       {/* Header */}
-      <div className="space-y-3 pb-6 border-b border-border">
-        <div className="flex items-center gap-2">
+      <div className="space-y-3 pb-6 border-b border-border text-center flex flex-col items-center">
+        <div className="flex items-center justify-center gap-2">
           <Badge variant="outline" className="font-mono text-xs">
             Statutory Calculator
           </Badge>
@@ -124,13 +124,13 @@ export default function CalculatorPage() {
         <h1 className="font-display font-black text-3xl sm:text-4xl text-foreground">
           Electoral Financing Statutory Calculators
         </h1>
-        <p className="text-sm text-muted-foreground max-w-2xl">
+        <p className="text-sm text-muted-foreground max-w-2xl text-center">
           Simulate official allocations under the Political Parties Fund (PPF) formula, or compute legal campaign spending caps for elective seats under Kenyan law.
         </p>
       </div>
 
       <Tabs defaultValue="ppf" className="space-y-8">
-        <TabsList className="grid w-full sm:w-[420px] grid-cols-2">
+        <TabsList className="grid w-full sm:w-[420px] grid-cols-2 mx-auto">
           <TabsTrigger value="ppf" className="gap-2 text-xs font-semibold">
             <Building2 className="w-3.5 h-3.5" />
             <span>PPF Formula Simulator</span>
@@ -144,7 +144,7 @@ export default function CalculatorPage() {
         {/* TAB 1: PPF FORMULA */}
         <TabsContent value="ppf" className="space-y-8">
           {/* Presets */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-xs text-muted-foreground font-semibold">Load Verified Election Presets:</span>
             <Button variant="outline" size="sm" onClick={() => loadPartyPreset('uda')} className="h-7 text-xs font-mono">
               UDA 2022 Results

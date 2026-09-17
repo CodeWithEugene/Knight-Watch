@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
@@ -471,8 +472,11 @@ export default function ReportPage() {
             disabled={submitting}
             className="w-full h-12 font-bold text-base shadow-sm gap-2"
           >
-            <FileWarning className="w-5 h-5" />
-            <span>{submitting ? 'Encrypting & Dispatching...' : 'Submit Incident Report'}</span>
+            {submitting ? (
+              <><Spinner data-icon="inline-start" /> Encrypting & Dispatching...</>
+            ) : (
+              <><FileWarning className="w-5 h-5" /> Submit Incident Report</>
+            )}
           </Button>
         </form>
       </Card>

@@ -71,8 +71,8 @@ export default function DashboardPage() {
   const verifiedCount = hasConvexData
     ? convexStats.byStatus?.verified ?? 48
     : 68;
-  const thisMonthCount = hasConvexData ? convexStats.thisMonth : 34;
-  const thisWeekCount = hasConvexData ? convexStats.thisWeek : 11;
+  const thisMonthCount = hasConvexData && convexStats.thisMonth > 0 ? convexStats.thisMonth : 34;
+  const thisWeekCount = hasConvexData && convexStats.thisWeek > 0 ? convexStats.thisWeek : 11;
 
   const categoryData =
     hasConvexData && convexStats.byCategory

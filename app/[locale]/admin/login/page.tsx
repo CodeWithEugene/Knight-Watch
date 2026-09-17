@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { BrandLogo } from '@/components/layout/BrandLogo';
@@ -23,19 +24,27 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Guard against overlapping submissions (rapid double-click / Enter+click races).
+  const submittingRef = useRef(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setError('');
     setLoading(true);
-    const res = await signIn('credentials', { email, password, redirect: false });
-    setLoading(false);
-    if (res?.error) {
-      setError('Invalid administrative credentials or insufficient authorization.');
-      return;
+    try {
+      const res = await signIn('credentials', { email, password, redirect: false });
+      if (!res || res.error || res.ok === false) {
+        setError('Invalid administrative credentials or insufficient authorization.');
+        return;
+      }
+      router.push(callbackUrl);
+      router.refresh();
+    } finally {
+      submittingRef.current = false;
+      setLoading(false);
     }
-    router.push(callbackUrl);
-    router.refresh();
   }
 
   return (
@@ -115,7 +124,11 @@ export default function AdminLoginPage() {
 
             <CardFooter className="flex flex-col gap-3 pt-2">
               <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
-                {loading ? 'Authenticating Clearance...' : 'Authenticate Access'} <ArrowRight className="w-3.5 h-3.5" />
+                {loading ? (
+                  <><Spinner data-icon="inline-start" /> Authenticating Clearance...</>
+                ) : (
+                  <>Authenticate Access <ArrowRight className="w-3.5 h-3.5" /></>
+                )}
               </Button>
 
               <div className="text-center">

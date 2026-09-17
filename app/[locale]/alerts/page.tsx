@@ -8,6 +8,7 @@ import { api } from '@/convex/_generated/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Bell, Mail, ShieldCheck, CheckCircle2, SlidersHorizontal, ArrowRight, Zap, Check } from 'lucide-react';
 
@@ -153,7 +154,11 @@ export default function AlertsPage() {
 
               <CardFooter className="flex flex-col gap-3 pt-2">
                 <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
-                  {loading ? 'Subscribing...' : 'Activate Alerts'} <ArrowRight className="w-3.5 h-3.5" />
+                  {loading ? (
+                    <><Spinner data-icon="inline-start" /> Subscribing...</>
+                  ) : (
+                    <>Activate Alerts <ArrowRight className="w-3.5 h-3.5" /></>
+                  )}
                 </Button>
 
                 <div className="text-center">

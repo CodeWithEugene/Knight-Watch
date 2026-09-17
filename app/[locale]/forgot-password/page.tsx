@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { BrandLogo } from '@/components/layout/BrandLogo';
@@ -103,7 +104,11 @@ function ForgotPasswordForm() {
 
               <CardFooter className="flex flex-col gap-3 pt-2">
                 <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
-                  {loading ? 'Sending...' : 'Send Reset Link'} <ArrowRight className="w-3.5 h-3.5" />
+                  {loading ? (
+                    <><Spinner data-icon="inline-start" /> Sending...</>
+                  ) : (
+                    <>Send Reset Link <ArrowRight className="w-3.5 h-3.5" /></>
+                  )}
                 </Button>
 
                 <Link

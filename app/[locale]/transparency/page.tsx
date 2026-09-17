@@ -21,8 +21,8 @@ export default function TransparencyPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16 space-y-10">
       {/* Header */}
-      <div className="space-y-3 border-b border-border pb-6">
-        <div className="flex items-center gap-2">
+      <div className="space-y-3 border-b border-border pb-6 text-center flex flex-col items-center">
+        <div className="flex items-center justify-center gap-2">
           <Badge variant="outline" className="text-xs font-mono">
             Quarterly Index · 2024/2025
           </Badge>
@@ -33,7 +33,7 @@ export default function TransparencyPage() {
         <h1 className="font-display font-black text-3xl sm:text-4xl text-foreground">
           Kenya Political Parties Transparency Index
         </h1>
-        <p className="text-sm text-muted-foreground max-w-2xl">
+        <p className="text-sm text-muted-foreground max-w-2xl text-center">
           Independent composite rankings assessing statutory disclosure of audited accounts, Political Parties Fund (PPF) expenditure compliance, public crowdfunding openness, and responsiveness to citizen violation reports.
         </p>
       </div>

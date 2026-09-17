@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { BrandLogo } from '@/components/layout/BrandLogo';
@@ -200,7 +201,11 @@ function ResetPasswordForm() {
 
               <CardFooter className="pt-2">
                 <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
-                  {loading ? 'Updating...' : 'Update Password'} <ArrowRight className="w-3.5 h-3.5" />
+                  {loading ? (
+                    <><Spinner data-icon="inline-start" /> Updating...</>
+                  ) : (
+                    <>Update Password <ArrowRight className="w-3.5 h-3.5" /></>
+                  )}
                 </Button>
               </CardFooter>
             </form>

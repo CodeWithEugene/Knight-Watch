@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { BrandLogo } from '@/components/layout/BrandLogo';
@@ -29,6 +30,8 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Guard against overlapping submissions (rapid double-click / Enter+click races).
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     const err = searchParams.get('error');
@@ -37,16 +40,22 @@ function LoginForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setError('');
     setLoading(true);
     try {
+      // NB: no callbackUrl is passed to signIn on purpose — it defaults to the
+      // absolute page URL, which keeps the client's response parsing safe.
+      // Navigation to the intended page happens explicitly below.
       const res = await signIn('credentials', { email, password, redirect: false });
-      if (res?.error) {
-        setLoading(false);
+      // Only navigate on an explicit success — never push an ambiguous
+      // response, which would bounce off the login wall and look like a dead click.
+      if (!res || res.error || res.ok === false) {
         const isConfigError =
-          res.error === 'Configuration' ||
-          res.error?.toLowerCase().includes('configuration') ||
-          res.url?.includes('error=Configuration');
+          res?.error === 'Configuration' ||
+          res?.error?.toLowerCase().includes('configuration') ||
+          res?.url?.includes('error=Configuration');
         setError(
           isConfigError
             ? 'Sign-in is temporarily unavailable. Please try again later or contact support.'
@@ -59,6 +68,7 @@ function LoginForm() {
     } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {
+      submittingRef.current = false;
       setLoading(false);
     }
   }
@@ -149,7 +159,11 @@ function LoginForm() {
 
             <CardFooter className="flex flex-col gap-3 pt-2">
               <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
-                {loading ? 'Authenticating...' : 'Sign In'} <ArrowRight className="w-3.5 h-3.5" />
+                {loading ? (
+                  <><Spinner data-icon="inline-start" /> Authenticating...</>
+                ) : (
+                  <>Sign In <ArrowRight className="w-3.5 h-3.5" /></>
+                )}
               </Button>
 
               <div className="text-center text-xs text-muted-foreground pt-1">

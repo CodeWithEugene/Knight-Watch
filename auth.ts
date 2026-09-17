@@ -2,6 +2,8 @@ import NextAuth from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { getServerSession } from 'next-auth';
+import { ConvexHttpClient } from 'convex/browser';
+import { api } from '@/convex/_generated/api';
 import { sendEmail } from '@/lib/email';
 import { emailTemplates } from '@/lib/emailTemplates';
 
@@ -40,19 +42,22 @@ export const authOptions: NextAuthOptions = {
         if (!convexUrl) return null;
 
         try {
-          const { ConvexHttpClient } = await import('convex/browser');
-          const { api } = await import('@/convex/_generated/api');
           const client = new ConvexHttpClient(convexUrl);
 
-          // 1. Try admin (from Convex admins table)
-          const admin = await client.action(api.auth.verifyAdmin, { email, password });
+          // Verify admin + user in parallel (single round-trip batch instead of
+          // two sequential ones — authorize runs on every login attempt).
+          const [admin, user] = await Promise.all([
+            client.action(api.auth.verifyAdmin, { email, password }),
+            client.action(api.auth.verifyUser, { email, password }),
+          ]);
+
+          // 1. Prefer admin (from Convex admins table)
           if (admin) {
             notifyLogin(admin.email);
             return admin;
           }
 
           // 2. Try Convex user
-          const user = await client.action(api.auth.verifyUser, { email, password });
           if (user) {
             notifyLogin(user.email);
             return { id: user.id, email: user.email, name: user.name ?? 'User', role: 'user' };

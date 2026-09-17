@@ -213,44 +213,42 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      {/* Reports Feed */}
-      <div className="space-y-4">
+      {/* Reports Feed — 4 cards per row on wide screens */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-stretch">
         {filteredReports.map((r: any) => (
-          <Link key={r._id} href={`/${locale}/reports/${r._id}`} className="block group">
-            <Card className="p-5 border-border hover:border-primary/50 transition-all hover:shadow-md">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-2 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge variant="outline" className="text-[11px] font-mono capitalize">
-                      {r.category.replace(/-/g, ' ')}
+          <Link key={r._id} href={`/${locale}/reports/${r._id}`} className="block group h-full">
+            <Card className="p-5 h-full flex flex-col border-border hover:border-primary/50 transition-all hover:shadow-md">
+              <div className="flex flex-col gap-3 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant="outline" className="text-[11px] font-mono capitalize">
+                    {r.category.replace(/-/g, ' ')}
+                  </Badge>
+                  {r.source && (
+                    <Badge variant="secondary" className="text-[10px] uppercase font-mono">
+                      Via {r.source}
                     </Badge>
-                    {r.source && (
-                      <Badge variant="secondary" className="text-[10px] uppercase font-mono">
-                        Via {r.source}
-                      </Badge>
-                    )}
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-primary" />
-                      <span>{r.county || r.location}</span>
-                    </span>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5" />
-                      <span>{new Date(r.createdAt).toLocaleDateString()}</span>
-                    </span>
-                  </div>
-
-                  <h2 className="font-display font-bold text-base sm:text-lg text-foreground group-hover:text-primary transition-colors leading-snug">
-                    {r.title}
-                  </h2>
-
-                  {r.description && (
-                    <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                      {r.description}
-                    </p>
                   )}
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span className="truncate">{r.county || r.location}</span>
+                  </span>
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5 shrink-0" />
+                    <span>{new Date(r.createdAt).toLocaleDateString()}</span>
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-3 self-start sm:self-center">
+                <h2 className="font-display font-bold text-base text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-3">
+                  {r.title}
+                </h2>
+
+                {r.description && (
+                  <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed flex-1">
+                    {r.description}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-between pt-1 mt-auto">
                   <VerificationBadge status={displayStatus(r.status)} />
                   <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
                 </div>
@@ -260,7 +258,7 @@ export default function ReportsPage() {
         ))}
 
         {filteredReports.length === 0 && (
-          <div className="text-center py-16 border border-dashed rounded-xl space-y-3">
+          <div className="col-span-full text-center py-16 border border-dashed rounded-xl space-y-3">
             <p className="text-muted-foreground text-sm">No campaign reports match your filters.</p>
             <Button
               variant="outline"

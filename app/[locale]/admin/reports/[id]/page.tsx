@@ -7,6 +7,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -291,8 +292,11 @@ export default function AdminReportDetailPage() {
                 disabled={saving}
                 className="w-full sm:w-auto text-xs font-bold gap-1.5"
               >
-                <Save className="w-3.5 h-3.5" />
-                {saving ? 'Saving...' : saveSuccess ? 'Saved!' : 'Save Determination'}
+                {saving ? (
+                  <><Spinner data-icon="inline-start" /> Saving...</>
+                ) : (
+                  <><Save className="w-3.5 h-3.5" /> {saveSuccess ? 'Saved!' : 'Save Determination'}</>
+                )}
               </Button>
             </CardFooter>
           </Card>

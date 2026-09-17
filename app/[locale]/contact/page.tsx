@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { 
@@ -152,8 +153,11 @@ export default function ContactPage() {
                       <p className="text-xs text-red-700 dark:text-red-300 text-center">{sendError}</p>
                     )}
                     <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
-                      <Send className="w-3.5 h-3.5" />
-                      {loading ? 'Transmitting...' : 'Send Message'}
+                      {loading ? (
+                        <><Spinner data-icon="inline-start" /> Transmitting...</>
+                      ) : (
+                        <><Send className="w-3.5 h-3.5" /> Send Message</>
+                      )}
                     </Button>
                   </CardFooter>
                 </form>

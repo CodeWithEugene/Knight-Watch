@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 import { useTranslation } from '@/lib/useTranslation';
+import { stripLocaleFromPathname } from '@/lib/locales';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -28,7 +29,7 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
   const getLocHref = (path: string) => `/${locale}${path}`;
 
   const isLinkActive = (href: string) => {
-    const normCurrent = pathname?.replace(/^\/[a-z]{2,3}/, '') || '/';
+    const normCurrent = stripLocaleFromPathname(pathname);
     if (href === '/report') {
       return normCurrent === '/report';
     }

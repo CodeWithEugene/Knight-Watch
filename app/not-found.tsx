@@ -10,7 +10,7 @@ export default function NotFound() {
         Page not found
       </p>
       <Link
-        href="/en"
+        href="/"
         className="mt-8 px-6 py-3 bg-primary text-primary-foreground font-bold rounded-lg hover:opacity-90"
       >
         Go home

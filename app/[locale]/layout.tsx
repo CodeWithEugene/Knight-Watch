@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { EmbedAwareLayout } from '@/components/layout/EmbedAwareLayout';
+import { LocaleProvider } from '@/components/i18n/LocaleProvider';
 import { LocaleLang } from '@/components/seo/LocaleLang';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { LOCALE_CODES } from '@/lib/locales';
-import { SITE_URL, buildPageMetadata, webpageJsonLd, breadcrumbJsonLd } from '@/lib/seo';
+import { LOCALE_CODES, isLocaleCode } from '@/lib/locales';
+import { buildPageMetadata, webpageJsonLd, breadcrumbJsonLd } from '@/lib/seo';
 
 export function generateStaticParams() {
   return LOCALE_CODES.map((locale) => ({ locale }));
@@ -24,12 +26,17 @@ export default function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  if (!isLocaleCode(params.locale)) notFound();
+  const locale = params.locale.toLowerCase() as typeof LOCALE_CODES[number];
+
   return (
-    <EmbedAwareLayout>
-      <LocaleLang locale={params.locale} />
-      <JsonLd data={webpageJsonLd({ locale: params.locale, routeKey: 'home' })} />
-      <JsonLd data={breadcrumbJsonLd(params.locale, [{ name: 'Home', path: '' }])} />
-      {children}
-    </EmbedAwareLayout>
+    <LocaleProvider locale={locale}>
+      <EmbedAwareLayout>
+        <LocaleLang locale={locale} />
+        <JsonLd data={webpageJsonLd({ locale, routeKey: 'home' })} />
+        <JsonLd data={breadcrumbJsonLd(locale, [{ name: 'Home', path: '' }])} />
+        {children}
+      </EmbedAwareLayout>
+    </LocaleProvider>
   );
 }

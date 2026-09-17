@@ -50,6 +50,11 @@ export function ChatbotWidget() {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [lastInputWasVoice, setLastInputWasVoice] = useState(false);
   const [voicesReady, setVoicesReady] = useState(false);
+  const [hasSpeechRecognition, setHasSpeechRecognition] = useState(false);
+
+  useEffect(() => {
+    setHasSpeechRecognition(!!getSpeechRecognition());
+  }, []);
   const listRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<{ stop(): void } | null>(null);
   const voiceTranscriptRef = useRef('');
@@ -202,7 +207,6 @@ export function ChatbotWidget() {
     send();
   }
 
-  const hasSpeechRecognition = typeof window !== 'undefined' && !!getSpeechRecognition();
 
   return (
     <div className="relative">

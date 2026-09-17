@@ -30,7 +30,7 @@ export default function Error({
           Try again
         </button>
         <Link
-          href="/en"
+          href="/"
           className="px-6 py-3 border border-[var(--border-color)] font-bold rounded-lg hover:border-[var(--accent-1)]"
         >
           Go home

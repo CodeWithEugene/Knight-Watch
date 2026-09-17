@@ -11,18 +11,15 @@ import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { Input } from '@/components/ui/input';
 import { MobileNav } from './MobileNav';
 import { useTranslation } from '@/lib/useTranslation';
-
-function getLocalizedHref(href: string, pathname: string | null) {
-  const locale = pathname?.split('/')[1] || 'en';
-  return `/${locale}${href}`;
-}
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { stripLocaleFromPathname } from '@/lib/locales';
 
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { status } = useSession();
-  const locale = pathname?.split('/')[1] || 'en';
-  const { t } = useTranslation(locale);
+  const locale = useLocale();
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -34,7 +31,7 @@ export function Header() {
   };
 
   const isLinkActive = (href: string) => {
-    const normCurrent = pathname?.replace(/^\/[a-z]{2,3}/, '') || '/';
+    const normCurrent = stripLocaleFromPathname(pathname);
     if (href === '/report') {
       return normCurrent === '/report';
     }
@@ -102,7 +99,7 @@ export function Header() {
             {navLinks.map((link) => (
               <Link
                 key={link.href}
-                href={getLocalizedHref(link.href, pathname)}
+                href={`/${locale}${link.href}`}
                 className={`px-2.5 py-1 2xl:px-3 2xl:py-1.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap ${
                   isLinkActive(link.href)
                     ? 'bg-accent text-accent-foreground font-semibold shadow-xs'

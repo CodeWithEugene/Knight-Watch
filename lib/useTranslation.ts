@@ -1,22 +1,23 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
 import { getMessage } from './i18n';
-import { KENYAN_LOCALES, LocaleCode } from './locales';
+import { KENYAN_LOCALES, isLocaleCode } from './locales';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 export function useTranslation(overrideLocale?: string) {
-  const pathname = usePathname();
-  const firstSegment = pathname?.split('/')[1]?.toLowerCase() || '';
-  const isKnown = KENYAN_LOCALES.some((l) => l.code === firstSegment);
-  const locale = overrideLocale || (isKnown ? firstSegment : 'en');
+  const activeLocale = useLocale();
+  const locale = overrideLocale && isLocaleCode(overrideLocale) ? overrideLocale.toLowerCase() : activeLocale;
 
-  const t = (key: string, fallback?: string): string => {
-    return getMessage(locale, key, fallback);
-  };
+  const t = useCallback(
+    (key: string, fallback?: string): string => getMessage(locale, key, fallback),
+    [locale],
+  );
 
-  const currentLocaleObj =
-    KENYAN_LOCALES.find((l) => l.code === locale) ||
-    KENYAN_LOCALES.find((l) => l.code === 'en')!;
+  const currentLocaleObj = useMemo(
+    () => KENYAN_LOCALES.find((l) => l.code === locale) ?? KENYAN_LOCALES.find((l) => l.code === 'en')!,
+    [locale],
+  );
 
   return {
     t,

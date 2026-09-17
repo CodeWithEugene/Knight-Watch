@@ -1,20 +1,27 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
-import { LOCALE_CODES } from './lib/locales';
+import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, isLocaleCode } from './lib/locales';
 
 const PROTECTED_SEGMENTS = ['mchango', 'map', 'dashboard', 'reports', 'transparency', 'calculator'];
-
-function isKnownLocale(segment: string): boolean {
-  return (LOCALE_CODES as readonly string[]).includes(segment);
-}
 
 function isProtectedPath(pathname: string): boolean {
   const parts = pathname.split('/').filter(Boolean);
   if (parts.length < 2) return false;
-  const locale = parts[0];
-  const segment = parts[1];
-  return isKnownLocale(locale) && PROTECTED_SEGMENTS.includes(segment);
+  return isLocaleCode(parts[0]) && PROTECTED_SEGMENTS.includes(parts[1]);
+}
+
+/** The visitor's remembered language, or the default when none is stored. */
+function getPreferredLocale(request: NextRequest): string {
+  const stored = request.cookies.get(LOCALE_COOKIE)?.value?.toLowerCase();
+  return isLocaleCode(stored) ? stored : DEFAULT_LOCALE;
+}
+
+/** Redirect to a new pathname while keeping the query string and hash intact. */
+function redirectToPathname(request: NextRequest, pathname: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  return NextResponse.redirect(url);
 }
 
 export async function middleware(request: NextRequest) {
@@ -32,17 +39,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Redirect bare root to default locale
+  const firstSegment = pathname.split('/').filter(Boolean)[0]?.toLowerCase() ?? '';
+
+  // Bare root and unprefixed paths go to the language the visitor last chose.
   if (pathname === '/' || pathname === '') {
-    return NextResponse.redirect(new URL('/en', request.url));
+    return redirectToPathname(request, `/${getPreferredLocale(request)}`);
   }
-
-  const firstSegment = pathname.split('/').filter(Boolean)[0] ?? '';
-  const pathnameHasLocale = isKnownLocale(firstSegment);
-
-  // Only prefix with /en if the first segment is NOT already a known locale.
-  if (!pathnameHasLocale) {
-    return NextResponse.redirect(new URL(`/en${pathname}`, request.url));
+  if (!isLocaleCode(firstSegment)) {
+    return redirectToPathname(request, `/${getPreferredLocale(request)}${pathname}`);
   }
 
   // Require login for protected segments
@@ -52,14 +56,22 @@ export async function middleware(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
     });
     if (!token) {
-      const locale = firstSegment || 'en';
-      const loginUrl = new URL(`/${locale}/login`, request.url);
+      const loginUrl = new URL(`/${firstSegment}/login`, request.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
     }
   }
 
-  return NextResponse.next();
+  // The URL is the source of truth: remember whichever locale is being viewed.
+  const response = NextResponse.next();
+  if (request.cookies.get(LOCALE_COOKIE)?.value !== firstSegment) {
+    response.cookies.set(LOCALE_COOKIE, firstSegment, {
+      path: '/',
+      maxAge: LOCALE_COOKIE_MAX_AGE,
+      sameSite: 'lax',
+    });
+  }
+  return response;
 }
 
 export const config = {

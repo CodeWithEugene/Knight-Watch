@@ -1,17 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { ShieldCheck, PhoneCall, Mail, ExternalLink } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { AccessibilityToggles } from '@/components/ui/AccessibilityToggles';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@/lib/useTranslation';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 export function Footer() {
-  const pathname = usePathname();
-  const locale = pathname?.split('/')[1] || 'en';
-  const { t } = useTranslation(locale);
+  const locale = useLocale();
+  const { t } = useTranslation();
 
   const footerSections = [
     {

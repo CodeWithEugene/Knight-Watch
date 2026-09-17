@@ -80,7 +80,7 @@ export default function SpendingLimitsPage() {
       <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         
         {/* Navigation */}
-        <div className="mb-8">
+        <div className="mb-8 flex justify-center">
           <Link
             href={`/${locale}/learn`}
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
@@ -91,7 +91,7 @@ export default function SpendingLimitsPage() {
         </div>
 
         {/* Hero Header */}
-        <div className="space-y-4 mb-10">
+        <div className="space-y-4 mb-10 text-center flex flex-col items-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-muted text-foreground border border-border">
             <AlertTriangle className="w-3.5 h-3.5" />
             Constitutional Lacuna Analysis

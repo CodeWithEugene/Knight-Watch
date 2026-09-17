@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -89,7 +88,7 @@ export default function FAQPage() {
       <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
         
         {/* Navigation */}
-        <div className="mb-8">
+        <div className="mb-8 flex justify-center">
           <Link
             href={`/${locale}/learn`}
             className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
@@ -100,7 +99,7 @@ export default function FAQPage() {
         </div>
 
         {/* Hero Header */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-4 mb-8 text-center flex flex-col items-center max-w-3xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
             <HelpCircle className="w-3.5 h-3.5" />
             Citizen Knowledge Base
@@ -140,34 +139,32 @@ export default function FAQPage() {
           </div>
         </div>
 
-        {/* Accordion FAQ List */}
-        <Card className="shadow-sm border-border/80 mb-12">
-          <CardContent className="p-6">
-            {filtered.length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground text-sm">
-                No matching questions found for &quot;{search}&quot;.
-              </div>
-            ) : (
-              <Accordion type="single" collapsible className="w-full divide-y divide-border">
-                {filtered.map((item) => (
-                  <AccordionItem key={item.id} value={item.id} className="border-none py-2">
-                    <AccordionTrigger className="text-left font-bold text-sm sm:text-base text-foreground hover:text-primary transition-colors py-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                        <span>{item.q}</span>
-                        <Badge variant="outline" className="text-[10px] w-fit font-normal">
-                          {item.category}
-                        </Badge>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground text-xs sm:text-sm leading-relaxed pt-1 pb-4">
-                      {item.a}
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            )}
-          </CardContent>
-        </Card>
+        {/* FAQ Cards Grid — 4 per row on wide screens */}
+        <div className="mb-12">
+          {filtered.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground text-sm rounded-xl border border-border bg-card">
+              No matching questions found for &quot;{search}&quot;.
+            </div>
+          ) : (
+            <Accordion type="single" collapsible className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 items-start">
+              {filtered.map((item) => (
+                <AccordionItem key={item.id} value={item.id} className="rounded-xl border border-border bg-card px-4 py-1 shadow-xs data-[state=open]:border-primary/40 transition-colors">
+                  <AccordionTrigger className="text-left font-bold text-sm text-foreground hover:text-primary transition-colors py-3">
+                    <div className="flex flex-col items-start gap-2">
+                      <span>{item.q}</span>
+                      <Badge variant="outline" className="text-[10px] w-fit font-normal">
+                        {item.category}
+                      </Badge>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-xs sm:text-sm leading-relaxed pt-1 pb-4">
+                    {item.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          )}
+        </div>
 
         {/* Still Have Questions Banner */}
         <div className="p-6 rounded-2xl border border-primary/20 bg-primary/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

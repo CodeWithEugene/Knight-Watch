@@ -2,69 +2,70 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShieldCheck, PhoneCall, Mail, ExternalLink, Heart } from 'lucide-react';
+import { ShieldCheck, PhoneCall, Mail, ExternalLink } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 import { AccessibilityToggles } from '@/components/ui/AccessibilityToggles';
 import { Badge } from '@/components/ui/badge';
-import { getMessage } from '@/lib/i18n';
-
-const footerSections = [
-  {
-    title: 'Civic Education',
-    links: [
-      { href: '/learn', label: 'Electoral Finance Guide' },
-      { href: '/learn/ppf', label: 'Political Parties Fund' },
-      { href: '/learn/spending-limits', label: 'Legal Spending Limits' },
-      { href: '/learn/glossary', label: 'Civic Glossary' },
-      { href: '/learn/faq', label: 'Frequently Asked Questions' },
-    ],
-  },
-  {
-    title: 'Citizen Action',
-    links: [
-      { href: '/report', label: 'Report Campaign Misuse' },
-      { href: '/report/ussd', label: 'USSD Reporting (*384*11400#)' },
-      { href: '/report/sms', label: 'SMS Whistleblower Line' },
-      { href: '/mchango', label: 'Mchango Crowdfunding' },
-      { href: '/mchango/transparency', label: 'Verified Contributions' },
-    ],
-  },
-  {
-    title: 'Data & Tracking',
-    links: [
-      { href: '/dashboard', label: 'National Dashboard' },
-      { href: '/map', label: '47 Counties Heat Map' },
-      { href: '/dashboard/parties', label: 'Political Parties Hub' },
-      { href: '/reports', label: 'Public Audit Feed' },
-      { href: '/transparency', label: 'Transparency Index' },
-      { href: '/trends', label: 'Historical Trends' },
-    ],
-  },
-  {
-    title: 'Tools & Intelligence',
-    links: [
-      { href: '/intelligence', label: 'AI Intelligence Engine' },
-      { href: '/calculator', label: 'Spending Limit Calculator' },
-      { href: '/data-sources', label: 'Official Data Sources' },
-      { href: '/api-docs', label: 'Developer API' },
-      { href: '/press', label: 'Press Kit & Releases' },
-    ],
-  },
-  {
-    title: 'Governance & Legal',
-    links: [
-      { href: '/about', label: 'About Knight Watch' },
-      { href: '/terms', label: 'Terms & Data Privacy' },
-      { href: '/privacy', label: 'Whistleblower Protection' },
-      { href: '/accessibility', label: 'Accessibility Statement' },
-      { href: '/contact', label: 'Contact Integrity Desk' },
-    ],
-  },
-];
+import { useTranslation } from '@/lib/useTranslation';
 
 export function Footer() {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'en';
+  const { t } = useTranslation(locale);
+
+  const footerSections = [
+    {
+      title: t('footer.civicEducation'),
+      links: [
+        { href: '/learn', label: t('footer.educationHub') },
+        { href: '/learn/ppf', label: t('footer.ppf') },
+        { href: '/learn/spending-limits', label: t('footer.spendingLimits') },
+        { href: '/learn/glossary', label: t('footer.glossary') },
+        { href: '/learn/faq', label: t('footer.faq') },
+      ],
+    },
+    {
+      title: t('footer.citizenAction'),
+      links: [
+        { href: '/report', label: t('footer.reportMisuse') },
+        { href: '/report/ussd', label: t('footer.ussd') },
+        { href: '/report/sms', label: t('footer.sms') },
+        { href: '/mchango', label: t('footer.mchango') },
+        { href: '/mchango/transparency', label: t('footer.verifiedContributions') },
+      ],
+    },
+    {
+      title: t('footer.dataTracking'),
+      links: [
+        { href: '/dashboard', label: t('footer.dashboard') },
+        { href: '/map', label: t('footer.viewMap') },
+        { href: '/dashboard/parties', label: t('footer.partiesHub') },
+        { href: '/reports', label: t('footer.reports') },
+        { href: '/transparency', label: t('footer.transparencyIndex') },
+        { href: '/trends', label: t('footer.trends') },
+      ],
+    },
+    {
+      title: t('footer.toolsIntelligence'),
+      links: [
+        { href: '/intelligence', label: t('footer.aiEngine') },
+        { href: '/calculator', label: t('footer.calculator') },
+        { href: '/data-sources', label: t('footer.dataSources') },
+        { href: '/api-docs', label: t('footer.apiDocs') },
+        { href: '/press', label: t('footer.pressKit') },
+      ],
+    },
+    {
+      title: t('footer.governanceLegal'),
+      links: [
+        { href: '/about', label: t('footer.about') },
+        { href: '/terms', label: t('footer.terms') },
+        { href: '/privacy', label: t('footer.privacy') },
+        { href: '/accessibility', label: t('footer.accessibility') },
+        { href: '/contact', label: t('footer.contact') },
+      ],
+    },
+  ];
 
   return (
     <footer
@@ -77,15 +78,15 @@ export function Footer() {
           <div className="lg:col-span-5 space-y-4">
             <BrandLogo locale={locale} />
             <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
-              Knight Watch Kenya is an open-source civic integrity and transparency platform empowering citizens, journalists, and oversight institutions to monitor political campaign spending and combat the misuse of public resources.
+              {t('footer.mission')}
             </p>
             <div className="flex flex-wrap items-center gap-2 pt-1">
               <Badge variant="secondary" className="gap-1 font-medium">
                 <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Verified Independent Watchdog</span>
+                <span>{t('footer.verifiedWatchdog')}</span>
               </Badge>
               <Badge variant="outline" className="font-mono text-xs">
-                IEBC & ORPP Public Records
+                {t('footer.publicRecords')}
               </Badge>
             </div>
           </div>
@@ -94,16 +95,16 @@ export function Footer() {
             <div className="rounded-xl border border-border bg-background/50 p-4 space-y-2">
               <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
                 <PhoneCall className="w-4 h-4 text-muted-foreground" />
-                <span>Offline Whistleblower Channel</span>
+                <span>{t('footer.offlineTitle')}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                No internet needed. Dial <span className="font-mono font-bold text-foreground">*384*11400#</span> on any mobile phone in Kenya to file an anonymous incident report.
+                {t('footer.offlineDial')}
               </p>
               <Link
                 href={`/${locale}/report/ussd`}
                 className="text-xs font-semibold text-foreground hover:underline inline-flex items-center gap-1"
               >
-                <span>Learn how USSD reporting works</span>
+                <span>{t('footer.offlineLink')}</span>
                 <ExternalLink className="w-3 h-3 text-muted-foreground" />
               </Link>
             </div>
@@ -111,16 +112,16 @@ export function Footer() {
             <div className="rounded-xl border border-border bg-background/50 p-4 space-y-2">
               <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
                 <Mail className="w-4 h-4 text-muted-foreground" />
-                <span>Real-Time Alerts & Updates</span>
+                <span>{t('footer.alertsTitle')}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Subscribe to verified campaign finance violation digests and county expenditure updates.
+                {t('footer.alertsDesc')}
               </p>
               <Link
                 href={`/${locale}/alerts`}
                 className="text-xs font-semibold text-foreground hover:underline inline-flex items-center gap-1"
               >
-                <span>Manage alert subscriptions</span>
+                <span>{t('footer.alertsLink')}</span>
                 <ExternalLink className="w-3 h-3 text-muted-foreground" />
               </Link>
             </div>
@@ -173,10 +174,10 @@ export function Footer() {
 
           <div className="text-center md:text-right space-y-1">
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} Knight Watch Kenya. Open data initiative in partnership with TI-Kenya.
+              &copy; {new Date().getFullYear()} {t('footer.copyright')}
             </p>
             <p className="text-[11px] text-muted-foreground/80 flex items-center justify-center md:justify-end gap-1.5">
-              <span>Dedicated to a transparent, fair, and accountable Kenya</span>
+              <span>{t('footer.dedicated')}</span>
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-muted-foreground/40"></span>
             </p>
           </div>

@@ -10,8 +10,9 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { Input } from '@/components/ui/input';
 import { MobileNav } from './MobileNav';
+import { useTranslation } from '@/lib/useTranslation';
 
-function getLocalizedHref(href: string, pathname: string | null): string {
+function getLocalizedHref(href: string, pathname: string | null) {
   const locale = pathname?.split('/')[1] || 'en';
   return `/${locale}${href}`;
 }
@@ -21,6 +22,7 @@ export function Header() {
   const router = useRouter();
   const { status } = useSession();
   const locale = pathname?.split('/')[1] || 'en';
+  const { t } = useTranslation(locale);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -43,15 +45,15 @@ export function Header() {
   };
 
   const navLinks = [
-    { href: '/learn', label: 'Learn' },
-    { href: '/intelligence', label: 'Intelligence' },
-    { href: '/report', label: 'Report' },
-    { href: '/mchango', label: 'Mchango' },
-    { href: '/map', label: 'Map' },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/reports', label: 'Reports' },
-    { href: '/transparency', label: 'Transparency' },
-    { href: '/calculator', label: 'Calculator' },
+    { href: '/learn', label: t('nav.learn') },
+    { href: '/intelligence', label: t('nav.intelligence') },
+    { href: '/report', label: t('nav.report') },
+    { href: '/mchango', label: t('nav.mchango') },
+    { href: '/map', label: t('nav.map') },
+    { href: '/dashboard', label: t('nav.dashboard') },
+    { href: '/reports', label: t('nav.reports') },
+    { href: '/transparency', label: t('nav.transparency') },
+    { href: '/calculator', label: t('nav.calculator') },
   ];
 
   return (
@@ -81,7 +83,7 @@ export function Header() {
                   : 'text-foreground/80 hover:text-foreground hover:bg-accent'
               }`}
             >
-              Home
+              {t('nav.home')}
             </Link>
 
             {/* 1. Search reports... */}
@@ -91,7 +93,7 @@ export function Header() {
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search reports..."
+                placeholder={t('nav.searchPlaceholder')}
                 className="h-8 w-32 2xl:w-40 pl-8 pr-2 text-xs bg-muted/40 border-input placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring rounded-full"
               />
             </form>
@@ -127,7 +129,7 @@ export function Header() {
                   : 'text-foreground/80 hover:text-foreground hover:bg-accent'
               }`}
             >
-              {status === 'authenticated' ? 'Sign Out' : 'Sign In'}
+              {status === 'authenticated' ? t('nav.signOut') : t('nav.signIn')}
             </button>
 
             {/* 12. Lang */}

@@ -8,6 +8,8 @@ import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
+import { useTranslation } from '@/lib/useTranslation';
+
 interface MobileNavProps {
   isOpen: boolean;
   onClose: () => void;
@@ -18,6 +20,7 @@ interface MobileNavProps {
 export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNavProps) {
   const router = useRouter();
   const { status } = useSession();
+  const { t } = useTranslation(locale);
   const [searchQuery, setSearchQuery] = useState('');
 
   if (!isOpen) return null;
@@ -44,16 +47,16 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
   };
 
   const navLinks = [
-    { href: '', label: 'Home' },
-    { href: '/learn', label: 'Learn' },
-    { href: '/intelligence', label: 'Intelligence' },
-    { href: '/report', label: 'Report' },
-    { href: '/mchango', label: 'Mchango' },
-    { href: '/map', label: 'Map' },
-    { href: '/dashboard', label: 'Dashboard' },
-    { href: '/reports', label: 'Reports' },
-    { href: '/transparency', label: 'Transparency' },
-    { href: '/calculator', label: 'Calculator' },
+    { href: '', label: t('nav.home') },
+    { href: '/learn', label: t('nav.learn') },
+    { href: '/intelligence', label: t('nav.intelligence') },
+    { href: '/report', label: t('nav.report') },
+    { href: '/mchango', label: t('nav.mchango') },
+    { href: '/map', label: t('nav.map') },
+    { href: '/dashboard', label: t('nav.dashboard') },
+    { href: '/reports', label: t('nav.reports') },
+    { href: '/transparency', label: t('nav.transparency') },
+    { href: '/calculator', label: t('nav.calculator') },
   ];
 
   return (
@@ -70,7 +73,7 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search reports..."
+            placeholder={t('nav.searchPlaceholder')}
             className="h-10 w-full pl-9 pr-3 text-sm bg-muted/40 border-input placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring rounded-full"
           />
         </form>
@@ -110,13 +113,13 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
               : 'text-foreground/80 hover:bg-accent hover:text-foreground'
           }`}
         >
-          {status === 'authenticated' ? 'Sign Out' : 'Sign In'}
+          {status === 'authenticated' ? t('nav.signOut') : t('nav.signIn')}
         </button>
 
         {/* 12. Lang */}
         <div className="pt-2 flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Language
+            {t('nav.lang')}
           </span>
           <LanguageSwitcher />
         </div>

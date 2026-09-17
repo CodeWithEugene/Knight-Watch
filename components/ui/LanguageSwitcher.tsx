@@ -24,7 +24,8 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
   }, []);
 
   const currentLocaleObj = KENYAN_LOCALES.find((l) => l.code === currentLocale);
-  const currentName = currentLocaleObj?.name ?? currentLocale;
+  const currentName = currentLocaleObj?.name ?? 'English';
+  const shortName = currentLocaleObj?.name.split(' ')[0] ?? 'English';
 
   return (
     <div className={`relative inline-block text-left shrink-0 ${className}`} ref={ref}>
@@ -37,17 +38,17 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
         aria-label={`Language selector. Current: ${currentName}`}
       >
         <Globe className="size-3 text-muted-foreground" />
-        <span>Lang</span>
+        <span className="font-semibold">{shortName}</span>
         <ChevronDown className={`size-3 text-muted-foreground transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 top-full mt-1.5 w-48 max-h-72 overflow-y-auto rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-md z-50 focus:outline-none"
+          className="absolute right-0 top-full mt-1.5 w-56 max-h-80 overflow-y-auto rounded-2xl border border-border bg-popover p-1.5 text-popover-foreground shadow-2xl z-50 focus:outline-none"
         >
-          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            Select Language
+          <div className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border/50 mb-1">
+            22 Kenyan Languages
           </div>
           {KENYAN_LOCALES.map((loc) => {
             const isSelected = currentLocale === loc.code;

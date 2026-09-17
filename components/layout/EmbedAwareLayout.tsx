@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { AutoTranslator } from '@/components/i18n/AutoTranslator';
 
 export function EmbedAwareLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -12,6 +13,7 @@ export function EmbedAwareLayout({ children }: { children: React.ReactNode }) {
   }
   return (
     <div className="min-h-screen flex flex-col w-full">
+      <AutoTranslator />
       <Header />
       <main id="main-content" className="flex-1 w-full">
         {children}

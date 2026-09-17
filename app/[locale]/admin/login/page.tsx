@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,6 @@ import { ShieldAlert, Lock, Mail, ArrowRight, AlertCircle, ArrowLeft } from 'luc
 export default function AdminLoginPage() {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'en';
-  const router = useRouter();
   const searchParams = useSearchParams();
   const safeCallback = getSafeCallbackUrl(searchParams.get('callbackUrl'), locale);
   const callbackUrl = safeCallback === `/${locale}` ? `/${locale}/admin` : safeCallback;
@@ -39,8 +38,9 @@ export default function AdminLoginPage() {
         setError('Invalid administrative credentials or insufficient authorization.');
         return;
       }
-      router.push(callbackUrl);
-      router.refresh();
+      // Full reload so the new session cookie is read server-side.
+      // router.push + router.refresh races the RSC cache and looks like a dead click.
+      window.location.href = callbackUrl;
     } finally {
       submittingRef.current = false;
       setLoading(false);

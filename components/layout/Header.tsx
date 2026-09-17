@@ -111,19 +111,19 @@ export function Header() {
               </Link>
             ))}
 
-            {/* 11. Sign out */}
+            {/* 11. Sign in / Sign out */}
             <button
               type="button"
               onClick={() => {
                 if (status === 'authenticated') {
                   signOut({ callbackUrl: `/${locale}` });
                 } else {
-                  signOut({ callbackUrl: `/${locale}/login` });
+                  router.push(`/${locale}/login`);
                 }
               }}
               className="px-2.5 py-1 2xl:px-3 2xl:py-1.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap text-foreground/80 hover:text-foreground hover:bg-accent cursor-pointer"
             >
-              Sign out
+              {status === 'authenticated' ? 'Sign out' : 'Sign in'}
             </button>
 
             {/* 12. Lang */}

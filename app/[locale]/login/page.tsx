@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -23,7 +23,6 @@ function getErrorMessage(errorParam: string | null): string {
 function LoginForm() {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'en';
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'), locale);
   const [email, setEmail] = useState('');
@@ -63,8 +62,11 @@ function LoginForm() {
         );
         return;
       }
-      await router.push(callbackUrl);
-      router.refresh();
+      // Force a full page load so the new session cookie is read server-side.
+      // router.push + router.refresh races the RSC cache: the destination can
+      // render with the stale (signed-out) session, which looks like a dead
+      // click and forces the user to click Sign In a second time.
+      window.location.href = callbackUrl;
     } catch {
       setError('An unexpected error occurred. Please try again.');
     } finally {

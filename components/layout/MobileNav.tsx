@@ -93,7 +93,7 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
           ))}
         </div>
 
-        {/* 11. Sign out */}
+        {/* 11. Sign in / Sign out */}
         <button
           type="button"
           onClick={() => {
@@ -101,12 +101,12 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
             if (status === 'authenticated') {
               signOut({ callbackUrl: `/${locale}` });
             } else {
-              signOut({ callbackUrl: `/${locale}/login` });
+              router.push(`/${locale}/login`);
             }
           }}
           className="text-left px-4 py-2.5 rounded-full text-sm font-medium text-foreground/80 hover:bg-accent hover:text-foreground transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
         >
-          Sign out
+          {status === 'authenticated' ? 'Sign out' : 'Sign in'}
         </button>
 
         {/* 12. Lang */}

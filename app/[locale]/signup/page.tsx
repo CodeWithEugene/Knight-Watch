@@ -3,7 +3,7 @@
 import { useState, Suspense, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
@@ -17,7 +17,6 @@ import { ShieldCheck, Lock, Mail, User, ArrowRight, AlertCircle, CheckCircle2 } 
 function SignupForm() {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'en';
-  const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'), locale);
   const [email, setEmail] = useState('');
@@ -59,8 +58,9 @@ function SignupForm() {
         setLoading(false);
         return;
       }
-      await router.push(callbackUrl);
-      router.refresh();
+      // Full reload so the new session cookie is read server-side.
+      // router.push + router.refresh races the RSC cache and looks like a dead click.
+      window.location.href = callbackUrl;
     } catch {
       setError('Something went wrong. Please check your connection and try again.');
     } finally {

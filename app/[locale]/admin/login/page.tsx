@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { signIn } from 'next-auth/react';
+import { useState, useRef, useEffect } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import { useSearchParams, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -17,6 +17,7 @@ export default function AdminLoginPage() {
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'en';
   const searchParams = useSearchParams();
+  const { data: session, status: authStatus } = useSession();
   const safeCallback = getSafeCallbackUrl(searchParams.get('callbackUrl'), locale);
   const callbackUrl = safeCallback === `/${locale}` ? `/${locale}/admin` : safeCallback;
   const [email, setEmail] = useState('');
@@ -26,6 +27,12 @@ export default function AdminLoginPage() {
   // Guard against overlapping submissions (rapid double-click / Enter+click races).
   const submittingRef = useRef(false);
 
+  useEffect(() => {
+    if (authStatus === 'authenticated' && (session?.user as { role?: string })?.role === 'admin') {
+      window.location.href = callbackUrl;
+    }
+  }, [authStatus, session, callbackUrl]);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (submittingRef.current) return;
@@ -33,17 +40,27 @@ export default function AdminLoginPage() {
     setError('');
     setLoading(true);
     try {
-      const res = await signIn('credentials', { email, password, redirect: false });
+      const res = await signIn('credentials', {
+        email,
+        password,
+        callbackUrl,
+        redirect: false,
+      });
+
       if (!res || res.error || res.ok === false) {
+        submittingRef.current = false;
+        setLoading(false);
         setError('Invalid administrative credentials or insufficient authorization.');
         return;
       }
-      // Full reload so the new session cookie is read server-side.
-      // router.push + router.refresh races the RSC cache and looks like a dead click.
+
+      // Keep loading=true and submittingRef.current=true so user doesn't see button reset
+      // or double-submit before full reload completes.
       window.location.href = callbackUrl;
-    } finally {
+    } catch {
       submittingRef.current = false;
       setLoading(false);
+      setError('An unexpected error occurred. Please try again.');
     }
   }
 

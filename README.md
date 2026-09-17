@@ -33,7 +33,7 @@ The Campaign Finance Watch Tool empowers Kenyan citizens to:
 | **Public Reporting** | Upload evidence (photos, videos) of campaign finance misuse |
 | **Report Categorization** | Vote buying, illegal donations, misuse of public resources, etc. |
 | **Geo-Mapping** | Interactive map and heat maps of incidents (Ushahidi-inspired) |
-| **USSD & SMS** | Report via feature phones (*384*1234# or shortcode) |
+| **USSD & SMS** | Report via feature phones (*384*11400# or shortcode) |
 | **Multi-Language** | English, Kiswahili, Kikuyu, Luo, Luhya, and more |
 | **Accessibility** | Screen reader support, keyboard nav, high contrast |
 | **Dashboards** | Visualizations, transparency index, trends |

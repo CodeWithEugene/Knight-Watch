@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -25,12 +25,19 @@ function LoginForm() {
   const locale = pathname?.split('/')[1] || 'en';
   const searchParams = useSearchParams();
   const callbackUrl = getSafeCallbackUrl(searchParams.get('callbackUrl'), locale);
+  const { status: authStatus } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   // Guard against overlapping submissions (rapid double-click / Enter+click races).
   const submittingRef = useRef(false);
+
+  useEffect(() => {
+    if (authStatus === 'authenticated') {
+      window.location.href = callbackUrl;
+    }
+  }, [authStatus, callbackUrl]);
 
   useEffect(() => {
     const err = searchParams.get('error');
@@ -44,13 +51,16 @@ function LoginForm() {
     setError('');
     setLoading(true);
     try {
-      // NB: no callbackUrl is passed to signIn on purpose — it defaults to the
-      // absolute page URL, which keeps the client's response parsing safe.
-      // Navigation to the intended page happens explicitly below.
-      const res = await signIn('credentials', { email, password, redirect: false });
-      // Only navigate on an explicit success — never push an ambiguous
-      // response, which would bounce off the login wall and look like a dead click.
+      const res = await signIn('credentials', {
+        email,
+        password,
+        callbackUrl,
+        redirect: false,
+      });
+
       if (!res || res.error || res.ok === false) {
+        submittingRef.current = false;
+        setLoading(false);
         const isConfigError =
           res?.error === 'Configuration' ||
           res?.error?.toLowerCase().includes('configuration') ||
@@ -62,16 +72,14 @@ function LoginForm() {
         );
         return;
       }
-      // Force a full page load so the new session cookie is read server-side.
-      // router.push + router.refresh races the RSC cache: the destination can
-      // render with the stale (signed-out) session, which looks like a dead
-      // click and forces the user to click Sign In a second time.
+
+      // Keep loading=true and submittingRef.current=true so user doesn't see button reset
+      // or double-submit before full reload completes.
       window.location.href = callbackUrl;
     } catch {
-      setError('An unexpected error occurred. Please try again.');
-    } finally {
       submittingRef.current = false;
       setLoading(false);
+      setError('An unexpected error occurred. Please try again.');
     }
   }
 

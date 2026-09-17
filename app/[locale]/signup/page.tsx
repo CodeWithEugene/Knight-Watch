@@ -48,24 +48,29 @@ function SignupForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        submittingRef.current = false;
         setError(data.error || 'Registration failed');
         setLoading(false);
         return;
       }
-      const signInRes = await signIn('credentials', { email, password, redirect: false });
+      const signInRes = await signIn('credentials', {
+        email,
+        password,
+        callbackUrl,
+        redirect: false,
+      });
       if (!signInRes || signInRes.error || signInRes.ok === false) {
+        submittingRef.current = false;
         setError('Account created but automatic sign-in failed. Please sign in manually.');
         setLoading(false);
         return;
       }
       // Full reload so the new session cookie is read server-side.
-      // router.push + router.refresh races the RSC cache and looks like a dead click.
       window.location.href = callbackUrl;
     } catch {
-      setError('Something went wrong. Please check your connection and try again.');
-    } finally {
       submittingRef.current = false;
       setLoading(false);
+      setError('Something went wrong. Please check your connection and try again.');
     }
   }
 

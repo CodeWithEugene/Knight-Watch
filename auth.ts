@@ -39,32 +39,50 @@ export const authOptions: NextAuthOptions = {
 
         // Prefer CONVEX_URL (server-only) so auth always uses the deployment you deployed to.
         const convexUrl = process.env.CONVEX_URL || process.env.NEXT_PUBLIC_CONVEX_URL;
-        if (!convexUrl) return null;
+        if (convexUrl && !convexUrl.includes('your-deployment.convex.cloud')) {
+          try {
+            const client = new ConvexHttpClient(convexUrl);
 
-        try {
-          const client = new ConvexHttpClient(convexUrl);
+            // Verify admin + user in parallel (single round-trip batch instead of
+            // two sequential ones — authorize runs on every login attempt).
+            const [admin, user] = await Promise.all([
+              client.action(api.auth.verifyAdmin, { email, password }),
+              client.action(api.auth.verifyUser, { email, password }),
+            ]);
 
-          // Verify admin + user in parallel (single round-trip batch instead of
-          // two sequential ones — authorize runs on every login attempt).
-          const [admin, user] = await Promise.all([
-            client.action(api.auth.verifyAdmin, { email, password }),
-            client.action(api.auth.verifyUser, { email, password }),
-          ]);
+            // 1. Prefer admin (from Convex admins table)
+            if (admin) {
+              notifyLogin(admin.email);
+              return admin;
+            }
 
-          // 1. Prefer admin (from Convex admins table)
-          if (admin) {
-            notifyLogin(admin.email);
-            return admin;
+            // 2. Try Convex user
+            if (user) {
+              notifyLogin(user.email);
+              return { id: user.id, email: user.email, name: user.name ?? 'User', role: 'user' };
+            }
+          } catch (err) {
+            console.error('[auth] Convex auth failed:', err);
           }
-
-          // 2. Try Convex user
-          if (user) {
-            notifyLogin(user.email);
-            return { id: user.id, email: user.email, name: user.name ?? 'User', role: 'user' };
-          }
-        } catch (err) {
-          console.error('[auth] Convex auth failed:', err);
         }
+
+        // Fallback: Check environment-variable based admin credentials
+        const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+        const rawAdminHash = process.env.ADMIN_PASSWORD_HASH?.trim();
+        if (adminEmail && rawAdminHash && email === adminEmail) {
+          try {
+            const bcrypt = (await import('bcryptjs')).default;
+            const adminHash = rawAdminHash.replace(/\\/g, '');
+            const ok = await bcrypt.compare(password, adminHash);
+            if (ok) {
+              notifyLogin(adminEmail);
+              return { id: 'admin', email: adminEmail, name: 'Admin', role: 'admin' };
+            }
+          } catch (err) {
+            console.error('[auth] Env admin auth error:', err);
+          }
+        }
+
         return null;
       },
     }),

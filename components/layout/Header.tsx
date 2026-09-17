@@ -111,7 +111,7 @@ export function Header() {
               </Link>
             ))}
 
-            {/* 11. Sign in / Sign out */}
+            {/* 11. Sign In / Sign Out */}
             <button
               type="button"
               onClick={() => {
@@ -121,9 +121,13 @@ export function Header() {
                   router.push(`/${locale}/login`);
                 }
               }}
-              className="px-2.5 py-1 2xl:px-3 2xl:py-1.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap text-foreground/80 hover:text-foreground hover:bg-accent cursor-pointer"
+              className={`px-2.5 py-1 2xl:px-3 2xl:py-1.5 rounded-full transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap cursor-pointer ${
+                status !== 'authenticated' && (pathname === `/${locale}/login` || pathname?.startsWith(`/${locale}/login`))
+                  ? 'bg-accent text-accent-foreground font-semibold shadow-xs'
+                  : 'text-foreground/80 hover:text-foreground hover:bg-accent'
+              }`}
             >
-              {status === 'authenticated' ? 'Sign out' : 'Sign in'}
+              {status === 'authenticated' ? 'Sign Out' : 'Sign In'}
             </button>
 
             {/* 12. Lang */}

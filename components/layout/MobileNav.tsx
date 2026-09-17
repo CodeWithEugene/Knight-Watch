@@ -93,7 +93,7 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
           ))}
         </div>
 
-        {/* 11. Sign in / Sign out */}
+        {/* 11. Sign In / Sign Out */}
         <button
           type="button"
           onClick={() => {
@@ -104,9 +104,13 @@ export function MobileNav({ isOpen, onClose, locale = 'en', pathname }: MobileNa
               router.push(`/${locale}/login`);
             }
           }}
-          className="text-left px-4 py-2.5 rounded-full text-sm font-medium text-foreground/80 hover:bg-accent hover:text-foreground transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className={`text-left px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] cursor-pointer ${
+            status !== 'authenticated' && (pathname === `/${locale}/login` || pathname?.startsWith(`/${locale}/login`))
+              ? 'bg-accent text-accent-foreground font-semibold'
+              : 'text-foreground/80 hover:bg-accent hover:text-foreground'
+          }`}
         >
-          {status === 'authenticated' ? 'Sign out' : 'Sign in'}
+          {status === 'authenticated' ? 'Sign Out' : 'Sign In'}
         </button>
 
         {/* 12. Lang */}

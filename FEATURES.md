@@ -130,7 +130,7 @@
 - **3.2.5** Admin interface to triage SMS reports and link to full report if needed
 
 ### 3.3 Report Submission (USSD)
-- **3.3.1** USSD code (e.g., *384*1234#) for feature-phone users
+- **3.3.1** USSD code (*384*11400#) for feature-phone users
 - **3.3.2** Menu flow:
   - Welcome → Select language (1 English, 2 Kiswahili)
   - Select category (1 Vote buying, 2 Illegal donations, 3 Misuse of public resources, 4 Other)
@@ -571,13 +571,13 @@
 
 ### 20.1 Africa's Talking USSD
 - **20.1.1** Create USSD channel in Africa's Talking dashboard
-- **20.1.2** Service code (e.g., *384*1234#)
+- **20.1.2** Service code (*384*11400#)
 - **20.1.3** Callback URL: https://campaign-finance-wach-tool.vercel.app/api/ussd
 - **20.1.4** Method: POST; Content-Type: application/x-www-form-urlencoded or application/json
 
 ### 20.2 Request Parameters (Africa's Talking)
 - **20.2.1** sessionId — Unique per session
-- **20.2.2** serviceCode — e.g., *384*1234#
+- **20.2.2** serviceCode — *384*11400#
 - **20.2.3** phoneNumber — e.g., +254712345678
 - **20.2.4** text — User input so far, separated by * (e.g., "1*2*My description")
 

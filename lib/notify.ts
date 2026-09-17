@@ -16,52 +16,114 @@ function getConvexUrl(): string | null {
 
 function getAdminDeskEmail(): string | null {
   const email = (process.env.ADMIN_EMAIL ?? '').trim();
-  return email && EMAIL_REGEX.test(email) ? email : null;
+  if (email && EMAIL_REGEX.test(email) && !email.includes('@cfwt.com')) {
+    return email;
+  }
+  const notif = (process.env.NOTIFICATION_EMAIL ?? '').trim();
+  if (notif && EMAIL_REGEX.test(notif)) return notif;
+  return 'eugenegabriel.ke@gmail.com';
 }
 
 function isFresh(createdAt: number, maxAgeMs: number): boolean {
   return Date.now() - createdAt <= maxAgeMs;
 }
 
+export interface ReportNotificationData {
+  title?: string;
+  category?: string;
+  location?: string;
+  email?: string;
+  source?: string;
+}
+
 /** Reporter acknowledgment + investigator alert for a newly filed report. */
 export async function notifyReportReceived(
   reportId: string,
-  locale = 'en'
+  locale = 'en',
+  fallbackData?: ReportNotificationData
 ): Promise<{ reporterSent: boolean; adminSent: boolean }> {
   const out = { reporterSent: false, adminSent: false };
   const convexUrl = getConvexUrl();
-  if (!convexUrl || !reportId) return out;
-  try {
-    const client = new ConvexHttpClient(convexUrl);
-    const report = await client.query(api.reports.get, { id: reportId as never });
-    if (!report || !isFresh(report.createdAt, 24 * 60 * 60 * 1000)) return out;
+  let report: {
+    email?: string;
+    title: string;
+    category: string;
+    location: string;
+    source: string;
+    id: string;
+  } | null = null;
 
-    if (report.email && EMAIL_REGEX.test(report.email)) {
-      const t = emailTemplates.reportReceived({
-        title: report.title,
-        category: report.category,
-        location: report.location,
-        reportId: String(report._id),
-        locale,
-      });
-      out.reporterSent = (await sendEmail({ to: report.email, subject: t.subject, html: t.html })).sent;
+  if (convexUrl && !convexUrl.includes('your-deployment.convex.cloud')) {
+    try {
+      const client = new ConvexHttpClient(convexUrl);
+      const fetched = await client.query(api.reports.get, { id: reportId as never });
+      if (fetched && isFresh(fetched.createdAt, 24 * 60 * 60 * 1000)) {
+        report = {
+          email: fetched.email,
+          title: fetched.title,
+          category: fetched.category,
+          location: fetched.location,
+          source: fetched.source ?? 'web',
+          id: String(fetched._id),
+        };
+      }
+    } catch (err) {
+      console.warn('[notify] Convex query warning in report-received:', err);
     }
-
-    const desk = getAdminDeskEmail();
-    if (desk && desk.toLowerCase() !== (report.email ?? '').toLowerCase()) {
-      const t = emailTemplates.adminNewReport({
-        title: report.title,
-        category: report.category,
-        location: report.location,
-        source: report.source ?? 'web',
-        reportId: String(report._id),
-        locale,
-      });
-      out.adminSent = (await sendEmail({ to: desk, subject: t.subject, html: t.html })).sent;
-    }
-  } catch (err) {
-    console.error('[notify] report-received failed:', err);
   }
+
+  // Fallback to client data if Convex is offline or unlinked locally
+  if (!report && fallbackData) {
+    report = {
+      email: fallbackData.email,
+      title: fallbackData.title || 'Civic Malpractice Report',
+      category: fallbackData.category || 'other',
+      location: fallbackData.location || 'Kenya',
+      source: fallbackData.source || 'web',
+      id: reportId,
+    };
+  }
+
+  if (!report) return out;
+
+  if (report.email && EMAIL_REGEX.test(report.email)) {
+    const t = emailTemplates.reportReceived({
+      title: report.title,
+      category: report.category,
+      location: report.location,
+      reportId: report.id,
+      locale,
+    });
+    out.reporterSent = (
+      await sendEmail({
+        to: report.email,
+        subject: t.subject,
+        html: t.html,
+        tags: ['report-confirmation'],
+      })
+    ).sent;
+  }
+
+  const desk = getAdminDeskEmail();
+  if (desk && desk.toLowerCase() !== (report.email ?? '').toLowerCase()) {
+    const t = emailTemplates.adminNewReport({
+      title: report.title,
+      category: report.category,
+      location: report.location,
+      source: report.source,
+      reportId: report.id,
+      locale,
+    });
+    out.adminSent = (
+      await sendEmail({
+        to: desk,
+        subject: t.subject,
+        html: t.html,
+        tags: ['admin-report-alert'],
+      })
+    ).sent;
+  }
+
   return out;
 }
 
@@ -86,29 +148,41 @@ export async function notifyReportStatus(
       reportId: String(report._id),
       locale,
     });
-    return await sendEmail({ to: report.email, subject: t.subject, html: t.html });
+    return await sendEmail({
+      to: report.email,
+      subject: t.subject,
+      html: t.html,
+      tags: ['report-status-update'],
+    });
   } catch (err) {
     console.error('[notify] report-status failed:', err);
     return { sent: false };
   }
 }
 
-/** Confirm a newsletter subscription (verified against Convex first). */
+/** Confirm a newsletter subscription (verified against Convex when available). */
 export async function notifySubscribe(email: string): Promise<{ sent: boolean }> {
   const clean = email.trim().toLowerCase();
   if (!EMAIL_REGEX.test(clean)) return { sent: false };
   const convexUrl = getConvexUrl();
-  if (!convexUrl) return { sent: false };
-  try {
-    const client = new ConvexHttpClient(convexUrl);
-    const existing = await client.query(api.newsletter.getByEmail, { email: clean });
-    if (!existing?.optedIn) return { sent: false };
-    const t = emailTemplates.newsletterWelcome();
-    return await sendEmail({ to: clean, subject: t.subject, html: t.html });
-  } catch (err) {
-    console.error('[notify] subscribe failed:', err);
-    return { sent: false };
+
+  if (convexUrl && !convexUrl.includes('your-deployment.convex.cloud')) {
+    try {
+      const client = new ConvexHttpClient(convexUrl);
+      const existing = await client.query(api.newsletter.getByEmail, { email: clean });
+      if (existing && !existing.optedIn) return { sent: false };
+    } catch (err) {
+      console.warn('[notify] Convex newsletter check skipped:', err);
+    }
   }
+
+  const t = emailTemplates.newsletterWelcome();
+  return await sendEmail({
+    to: clean,
+    subject: t.subject,
+    html: t.html,
+    tags: ['newsletter-welcome'],
+  });
 }
 
 /** Contact form: team notification + sender confirmation. */
@@ -128,10 +202,25 @@ export async function notifyContact(input: {
   const desk = getAdminDeskEmail();
   if (desk) {
     const t = emailTemplates.contactTeamNotification({ name, email, subject, message });
-    out.teamSent = (await sendEmail({ to: desk, subject: t.subject, html: t.html })).sent;
+    out.teamSent = (
+      await sendEmail({
+        to: desk,
+        subject: t.subject,
+        html: t.html,
+        replyTo: { email, name },
+        tags: ['contact-team-inquiry'],
+      })
+    ).sent;
   }
   const c = emailTemplates.contactConfirmation(name);
-  out.confirmSent = (await sendEmail({ to: email, subject: c.subject, html: c.html })).sent;
+  out.confirmSent = (
+    await sendEmail({
+      to: email,
+      subject: c.subject,
+      html: c.html,
+      tags: ['contact-confirmation'],
+    })
+  ).sent;
   return out;
 }
 
@@ -142,26 +231,36 @@ export async function notifyMchangoReceipt(input: {
   amountKes: number;
   paidAt?: string;
   locale?: string;
+  partyName?: string;
 }): Promise<{ sent: boolean }> {
   if (!EMAIL_REGEX.test(input.payerEmail)) return { sent: false };
   const convexUrl = getConvexUrl();
-  if (!convexUrl) return { sent: false };
-  try {
-    const client = new ConvexHttpClient(convexUrl);
-    const { claimed, contribution } = await client.mutation(api.contributions.claimReceiptEmail, {
-      paystackReference: input.paystackReference,
-    });
-    if (!claimed || !contribution) return { sent: false };
-    const t = emailTemplates.mchangoReceipt({
-      partyName: contribution.partyName,
-      amountKes: input.amountKes,
-      reference: input.paystackReference,
-      paidAt: input.paidAt,
-      locale: input.locale ?? 'en',
-    });
-    return await sendEmail({ to: input.payerEmail, subject: t.subject, html: t.html });
-  } catch (err) {
-    console.error('[notify] mchango receipt failed:', err);
-    return { sent: false };
+  let partyName = input.partyName || 'Political Party Civic Fund';
+
+  if (convexUrl && !convexUrl.includes('your-deployment.convex.cloud')) {
+    try {
+      const client = new ConvexHttpClient(convexUrl);
+      const { claimed, contribution } = await client.mutation(api.contributions.claimReceiptEmail, {
+        paystackReference: input.paystackReference,
+      });
+      if (!claimed || !contribution) return { sent: false };
+      partyName = contribution.partyName;
+    } catch (err) {
+      console.warn('[notify] Convex mchango receipt claim warning:', err);
+    }
   }
+
+  const t = emailTemplates.mchangoReceipt({
+    partyName,
+    amountKes: input.amountKes,
+    reference: input.paystackReference,
+    paidAt: input.paidAt,
+    locale: input.locale ?? 'en',
+  });
+  return await sendEmail({
+    to: input.payerEmail,
+    subject: t.subject,
+    html: t.html,
+    tags: ['mchango-receipt'],
+  });
 }

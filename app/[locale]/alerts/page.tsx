@@ -39,8 +39,13 @@ export default function AlertsPage() {
         body: JSON.stringify({ email }),
       }).catch(() => {});
       setSubmitted(true);
-    } catch (err) {
-      // Mock success if Convex is not linked locally
+    } catch {
+      // Mock success if Convex is not linked locally, still trigger welcome email
+      fetch('/api/notify/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }).catch(() => {});
       setSubmitted(true);
     } finally {
       setLoading(false);

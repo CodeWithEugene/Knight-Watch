@@ -16,7 +16,16 @@ function notifyLogin(email: string) {
       timeStyle: 'short',
     });
     const template = emailTemplates.loginAlert(`${when} EAT`);
-    void sendEmail({ to: email, subject: template.subject, html: template.html }).catch((err) =>
+    const targetEmail =
+      email.toLowerCase().includes('@cfwt.com')
+        ? (process.env.NOTIFICATION_EMAIL || 'eugenegabriel.ke@gmail.com')
+        : email;
+    void sendEmail({
+      to: targetEmail,
+      subject: template.subject,
+      html: template.html,
+      tags: ['auth-login-alert'],
+    }).catch((err) =>
       console.error('[auth] login alert email failed:', err)
     );
   } catch (err) {

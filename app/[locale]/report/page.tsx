@@ -136,12 +136,34 @@ export default function ReportPage() {
       fetch('/api/notify/report-received', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reportId, locale }),
+        body: JSON.stringify({
+          reportId,
+          locale,
+          email: data.email?.trim() || undefined,
+          title: data.title,
+          category: data.category,
+          location: data.location,
+          source: 'web',
+        }),
       }).catch(() => {});
       router.push(`/${locale}/report/success?id=${reportId}`);
     } catch {
       // If Convex isn't connected yet, generate an offline ticket ID
       const fallbackId = 'RPT-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+      // Still send confirmation & alert email if reporter provided email
+      fetch('/api/notify/report-received', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reportId: fallbackId,
+          locale,
+          email: data.email?.trim() || undefined,
+          title: data.title,
+          category: data.category,
+          location: data.location,
+          source: 'web',
+        }),
+      }).catch(() => {});
       router.push(`/${locale}/report/success?id=${fallbackId}`);
     } finally {
       setSubmitting(false);

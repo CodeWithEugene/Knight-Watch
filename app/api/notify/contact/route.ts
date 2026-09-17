@@ -6,7 +6,8 @@ import { notifyContact } from '@/lib/notify';
 /** Contact form backend: integrity-desk notification + sender confirmation. */
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
-  const { allowed } = checkRateLimit(ip, 'notify-contact', { limit: 3, windowMs: 60 * 60 * 1000 });
+  const isDev = process.env.NODE_ENV === 'development';
+  const { allowed } = checkRateLimit(ip, 'notify-contact', { limit: isDev ? 100 : 5, windowMs: 60 * 60 * 1000 });
   if (!allowed) {
     return NextResponse.json({ error: 'Too many messages. Please try again later.' }, { status: 429 });
   }

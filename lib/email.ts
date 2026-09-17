@@ -22,11 +22,13 @@ export async function sendEmail(opts: {
   subject: string;
   html: string;
   text?: string;
-}): Promise<{ sent: boolean }> {
+  tags?: string[];
+  replyTo?: { email: string; name?: string };
+}): Promise<{ sent: boolean; messageId?: string; error?: string }> {
   const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
-    console.log(`[email] BREVO_API_KEY missing — would send to ${opts.to}: ${opts.subject}`);
-    return { sent: false };
+    console.warn(`[email] BREVO_API_KEY missing — simulated send to ${opts.to}: ${opts.subject}`);
+    return { sent: false, error: 'BREVO_API_KEY environment variable is not configured.' };
   }
   try {
     const from = getEmailFrom();
@@ -39,20 +41,26 @@ export async function sendEmail(opts: {
       body: JSON.stringify({
         sender: { name: from.name, email: from.email },
         to: [{ email: opts.to }],
+        replyTo: opts.replyTo,
         subject: opts.subject,
         htmlContent: opts.html,
         textContent: opts.text,
+        tags: opts.tags,
       }),
     });
     if (!res.ok) {
       const body = await res.text().catch(() => '');
       console.error('[email] Brevo send failed:', res.status, body.slice(0, 300));
-      return { sent: false };
+      return { sent: false, error: `Brevo error (${res.status}): ${body.slice(0, 300)}` };
     }
-    return { sent: true };
+    const data = await res.json().catch(() => ({}));
+    const messageId = typeof data.messageId === 'string' ? data.messageId : undefined;
+    console.log(`[email] Sent successfully via Brevo to ${opts.to} (messageId: ${messageId ?? 'ok'})`);
+    return { sent: true, messageId };
   } catch (err) {
-    console.error('[email] Brevo send error:', err);
-    return { sent: false };
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[email] Brevo send error:', message);
+    return { sent: false, error: message };
   }
 }
 

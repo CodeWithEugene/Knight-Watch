@@ -1,11 +1,12 @@
 import Link from 'next/link';
+import { useTranslation } from '@/lib/useTranslation';
 
 export function BrandLogo({
   locale = 'en',
   className = '',
   iconOnly = false,
   size = 'md',
-  subtitle = 'Civic Campaign Finance Integrity',
+  subtitle,
 }: {
   locale?: string;
   className?: string;
@@ -13,6 +14,8 @@ export function BrandLogo({
   size?: 'sm' | 'md' | 'lg';
   subtitle?: string;
 }) {
+  const { t } = useTranslation(locale);
+  const displaySubtitle = subtitle ?? t('home.heroBadge', 'Civic Campaign Finance Integrity');
   const iconDimensions = {
     sm: { width: 32, height: 32, class: 'w-8 h-8' },
     md: { width: 40, height: 40, class: 'w-10 h-10' },
@@ -64,7 +67,7 @@ export function BrandLogo({
             Knight Watch
           </span>
           <span className="text-[10px] font-medium tracking-wide text-muted-foreground leading-tight mt-1 max-w-[150px] sm:max-w-[170px] truncate">
-            {subtitle}
+            {displaySubtitle}
           </span>
         </div>
       )}

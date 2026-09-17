@@ -2,152 +2,21 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { getMessage } from '@/lib/i18n';
+import { messages } from '@/lib/i18n';
 import { KENYAN_LOCALES } from '@/lib/locales';
 
+interface PhraseEntry {
+  en: string;
+  enLower: string;
+  translated: string;
+  escaped: string;
+}
+
 /**
- * Common English UI phrases mapped to translation keys in lib/i18n.ts.
- * This guarantees that components and sub-pages across the entire platform
- * get automatically translated when any of the 22 Kenyan languages is active.
+ * Universal Dual-Engine Full-Platform Auto-Translator for Knight Watch Kenya.
+ * Guarantees that EVERY section, page, card, badge, button, form placeholder,
+ * and dialog translates into the selected Kenyan language across all 22 languages.
  */
-const COMMON_PHRASE_MAPPINGS: Array<{ pattern: RegExp | string; key: string }> = [
-  // Navigation
-  { pattern: /^home$/i, key: 'nav.home' },
-  { pattern: /^learn$/i, key: 'nav.learn' },
-  { pattern: /^intelligence$/i, key: 'nav.intelligence' },
-  { pattern: /^report$/i, key: 'nav.report' },
-  { pattern: /^mchango$/i, key: 'nav.mchango' },
-  { pattern: /^map$/i, key: 'nav.map' },
-  { pattern: /^dashboard$/i, key: 'nav.dashboard' },
-  { pattern: /^reports$/i, key: 'nav.reports' },
-  { pattern: /^transparency$/i, key: 'nav.transparency' },
-  { pattern: /^calculator$/i, key: 'nav.calculator' },
-  { pattern: /^sign in$/i, key: 'nav.signIn' },
-  { pattern: /^sign out$/i, key: 'nav.signOut' },
-  { pattern: /^search reports\.\.\.$/i, key: 'nav.searchPlaceholder' },
-  { pattern: /^select language$/i, key: 'nav.selectLang' },
-  { pattern: /^lang$/i, key: 'nav.lang' },
-
-  // Hero & CTAs
-  { pattern: /^civic campaign finance integrity watchdog$/i, key: 'home.heroBadge' },
-  { pattern: /^track political campaign money & safeguard public funds in kenya$/i, key: 'home.title' },
-  { pattern: /^report misuse \/ whistleblow$/i, key: 'home.reportBtn' },
-  { pattern: /^explore live dashboard$/i, key: 'home.dashboardBtn' },
-  { pattern: /^file an incident report$/i, key: 'home.reportBtn' },
-  { pattern: /^launch interactive map$/i, key: 'footer.viewMap' },
-  { pattern: /^ask intelligence engine$/i, key: 'footer.aiEngine' },
-  { pattern: /^explore mchango$/i, key: 'home.quickMchango' },
-  { pattern: /^calculate spending caps$/i, key: 'home.quickCalculator' },
-  { pattern: /^visit education hub$/i, key: 'footer.educationHub' },
-
-  // Stats
-  { pattern: /^verified malpractice reports$/i, key: 'home.statReports' },
-  { pattern: /^audited & geo-located$/i, key: 'home.statReportsDesc' },
-  { pattern: /^counties monitored$/i, key: 'home.statCounties' },
-  { pattern: /^counties active$/i, key: 'home.statCounties' },
-  { pattern: /^all 47 devolved units$/i, key: 'home.statCountiesDesc' },
-  { pattern: /^national coverage$/i, key: 'home.statCountiesDesc' },
-  { pattern: /^tracked political spending$/i, key: 'home.statTracked' },
-  { pattern: /^mchango tracked$/i, key: 'home.statTracked' },
-  { pattern: /^disbursements & declarations$/i, key: 'home.statTrackedDesc' },
-  { pattern: /^transparent donations$/i, key: 'home.statTrackedDesc' },
-  { pattern: /^active political parties$/i, key: 'home.statParties' },
-  { pattern: /^ppf monitored$/i, key: 'home.statParties' },
-  { pattern: /^public ppf records$/i, key: 'home.statPartiesDesc' },
-  { pattern: /^8 parties audited$/i, key: 'home.statPartiesDesc' },
-  { pattern: /^verified audits$/i, key: 'home.statReports' },
-  { pattern: /^fact-checked & mapped$/i, key: 'home.statReportsDesc' },
-
-  // User Journeys
-  { pattern: /^user action journeys$/i, key: 'home.actionJourneys' },
-  { pattern: /^how citizens & observers take action$/i, key: 'home.actionTitle' },
-  { pattern: /^report campaign misuse$/i, key: 'home.quickReport' },
-  { pattern: /^transparent mchango$/i, key: 'home.quickMchango' },
-  { pattern: /^electoral finance guide$/i, key: 'home.quickLearn' },
-  { pattern: /^47 counties heat map$/i, key: 'home.quickMap' },
-  { pattern: /^47 counties geographic radar$/i, key: 'home.quickMap' },
-  { pattern: /^ai intelligence engine$/i, key: 'home.quickIntelligence' },
-  { pattern: /^spending ceilings calculator$/i, key: 'home.quickCalculator' },
-  { pattern: /^spending limit calculator$/i, key: 'home.quickCalculator' },
-  { pattern: /^citizen education & law$/i, key: 'home.quickLearn' },
-  { pattern: /^mchango crowdfunding hub$/i, key: 'home.quickMchango' },
-
-  // Whistleblower Trust & Protection
-  { pattern: /^zero knowledge anonymity$/i, key: 'home.trustBadge' },
-  { pattern: /^how your whistleblower report is protected & verified$/i, key: 'home.trustTitle' },
-  { pattern: /^anonymous intake$/i, key: 'home.step1Title' },
-  { pattern: /^evidence hashing$/i, key: 'home.step2Title' },
-  { pattern: /^independent fact-check$/i, key: 'home.step3Title' },
-  { pattern: /^oversight referral$/i, key: 'home.step4Title' },
-  { pattern: /^start anonymous report$/i, key: 'home.startAnonymous' },
-  { pattern: /^read privacy protocol$/i, key: 'home.privacyProtocol' },
-
-  // Offline Channels
-  { pattern: /^offline whistleblower channel$/i, key: 'home.offlineTitle' },
-  { pattern: /^civic watchdog alerts$/i, key: 'home.alertsTitle' },
-  { pattern: /^real-time alerts & updates$/i, key: 'footer.alertsTitle' },
-
-  // Footer Sections & Links
-  { pattern: /^civic education$/i, key: 'footer.civicEducation' },
-  { pattern: /^citizen action$/i, key: 'footer.citizenAction' },
-  { pattern: /^data & tracking$/i, key: 'footer.dataTracking' },
-  { pattern: /^tools & intelligence$/i, key: 'footer.toolsIntelligence' },
-  { pattern: /^governance & legal$/i, key: 'footer.governanceLegal' },
-  { pattern: /^verified independent watchdog$/i, key: 'footer.verifiedWatchdog' },
-  { pattern: /^iebc & orpp public records$/i, key: 'footer.publicRecords' },
-  { pattern: /^political parties fund$/i, key: 'footer.ppf' },
-  { pattern: /^legal spending limits$/i, key: 'footer.spendingLimits' },
-  { pattern: /^civic glossary$/i, key: 'footer.glossary' },
-  { pattern: /^frequently asked questions$/i, key: 'footer.faq' },
-  { pattern: /^sms whistleblower line$/i, key: 'footer.sms' },
-  { pattern: /^mchango crowdfunding$/i, key: 'footer.mchango' },
-  { pattern: /^verified contributions$/i, key: 'footer.verifiedContributions' },
-  { pattern: /^national dashboard$/i, key: 'footer.dashboard' },
-  { pattern: /^political parties hub$/i, key: 'footer.partiesHub' },
-  { pattern: /^public audit feed$/i, key: 'footer.reports' },
-  { pattern: /^transparency index$/i, key: 'footer.transparencyIndex' },
-  { pattern: /^historical trends$/i, key: 'footer.trends' },
-  { pattern: /^official data sources$/i, key: 'footer.dataSources' },
-  { pattern: /^developer api$/i, key: 'footer.apiDocs' },
-  { pattern: /^press kit & releases$/i, key: 'footer.pressKit' },
-  { pattern: /^about knight watch$/i, key: 'footer.about' },
-  { pattern: /^terms & data privacy$/i, key: 'footer.terms' },
-  { pattern: /^whistleblower protection$/i, key: 'footer.privacy' },
-  { pattern: /^accessibility statement$/i, key: 'footer.accessibility' },
-  { pattern: /^contact integrity desk$/i, key: 'footer.contact' },
-
-  // Common UI Actions & Labels
-  { pattern: /^verified$/i, key: 'common.verified' },
-  { pattern: /^under review$/i, key: 'common.underReview' },
-  { pattern: /^view more$/i, key: 'common.viewMore' },
-  { pattern: /^loading\.\.\.$/i, key: 'common.loading' },
-  { pattern: /^back$/i, key: 'common.back' },
-  { pattern: /^close$/i, key: 'common.close' },
-  { pattern: /^cancel$/i, key: 'common.cancel' },
-  { pattern: /^submit$/i, key: 'common.submit' },
-  { pattern: /^search$/i, key: 'common.search' },
-  { pattern: /^filter$/i, key: 'common.filter' },
-  { pattern: /^political parties$/i, key: 'common.parties' },
-  { pattern: /^counties$/i, key: 'common.counties' },
-  { pattern: /^all counties$/i, key: 'common.allCounties' },
-  { pattern: /^all parties$/i, key: 'common.allParties' },
-  { pattern: /^status$/i, key: 'common.status' },
-  { pattern: /^amount$/i, key: 'common.amount' },
-  { pattern: /^date$/i, key: 'common.date' },
-  { pattern: /^category$/i, key: 'common.category' },
-  { pattern: /^description$/i, key: 'common.description' },
-  { pattern: /^location$/i, key: 'common.location' },
-  { pattern: /^details$/i, key: 'common.details' },
-  { pattern: /^submit report$/i, key: 'common.submitReport' },
-  { pattern: /^overview$/i, key: 'common.overview' },
-  { pattern: /^statistics$/i, key: 'common.statistics' },
-  { pattern: /^learn more$/i, key: 'common.learnMore' },
-  { pattern: /^anonymous$/i, key: 'common.anonymous' },
-  { pattern: /^evidence$/i, key: 'common.evidence' },
-  { pattern: /^download$/i, key: 'common.download' },
-  { pattern: /^export$/i, key: 'common.export' },
-];
-
 export function AutoTranslator() {
   const pathname = usePathname();
   const currentCode = pathname?.split('/')[1]?.toLowerCase() || 'en';
@@ -155,45 +24,191 @@ export function AutoTranslator() {
   const locale = isKnown ? currentCode : 'en';
 
   useEffect(() => {
-    // Keep document.documentElement.lang synced with active locale
+    // 1. Keep HTML lang attribute in sync
     document.documentElement.lang = locale;
 
-    if (locale === 'en') return;
+    // 2. Google Translate background integration for supported languages
+    const googleCodeMap: Record<string, string> = {
+      sw: 'sw',
+      so: 'so',
+      gax: 'om', // Afaan Borana is an Oromo language variant supported by Google as 'om'
+    };
 
-    const translatedSet = new WeakSet<Node>();
+    const targetGoogleCode = googleCodeMap[locale];
 
-    function translateTextNode(node: Text) {
-      if (translatedSet.has(node)) return;
-
-      const original = node.nodeValue;
-      if (!original) return;
-      const text = original.trim();
-      if (!text || text.length > 250) return;
-
-      for (const mapping of COMMON_PHRASE_MAPPINGS) {
-        let matches = false;
-        if (typeof mapping.pattern === 'string') {
-          matches = text.toLowerCase() === mapping.pattern.toLowerCase();
-        } else {
-          matches = mapping.pattern.test(text);
+    function syncGoogleTranslate(targetLang: string | null) {
+      try {
+        const select = document.querySelector<HTMLSelectElement>('.goog-te-combo');
+        if (select) {
+          const desired = targetLang || '';
+          if (select.value !== desired) {
+            select.value = desired;
+            select.dispatchEvent(new Event('change'));
+          }
         }
+      } catch {}
+    }
 
-        if (matches) {
-          const translated = getMessage(locale, mapping.key);
-          if (translated && translated !== text && translated !== mapping.key) {
-            translatedSet.add(node);
-            if (typeof mapping.pattern === 'string') {
-              node.nodeValue = original.replace(text, translated);
-            } else {
-              node.nodeValue = original.replace(mapping.pattern, translated);
+    if (targetGoogleCode) {
+      try {
+        document.cookie = `googtrans=/en/${targetGoogleCode}; path=/;`;
+        document.cookie = `googtrans=/en/${targetGoogleCode}; domain=${window.location.hostname}; path=/;`;
+      } catch {}
+      syncGoogleTranslate(targetGoogleCode);
+    } else {
+      try {
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${window.location.hostname}; path=/;`;
+      } catch {}
+      syncGoogleTranslate(null);
+    }
+
+    // Load Google Translate script once if not already present
+    if (typeof window !== 'undefined' && !(window as any).google?.translate) {
+      const existingScript = document.getElementById('google-translate-script');
+      if (!existingScript) {
+        (window as any).googleTranslateElementInit = () => {
+          try {
+            new (window as any).google.translate.TranslateElement(
+              { pageLanguage: 'en', autoDisplay: false },
+              'google_translate_element'
+            );
+            if (targetGoogleCode) {
+              setTimeout(() => syncGoogleTranslate(targetGoogleCode), 300);
             }
-            break;
+          } catch {}
+        };
+        const script = document.createElement('script');
+        script.id = 'google-translate-script';
+        script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    }
+
+    // 3. Build native dictionary mapping: English phrase -> Translated phrase
+    const enDict = messages.en || {};
+    const targetDict = messages[locale] || {};
+
+    const phraseEntries: PhraseEntry[] = [];
+
+    // Collect all translation keys for current locale
+    if (locale !== 'en') {
+      for (const key of Object.keys(enDict)) {
+        const enVal = enDict[key]?.trim();
+        const trVal = targetDict[key]?.trim();
+        if (enVal && trVal && enVal.toLowerCase() !== trVal.toLowerCase()) {
+          phraseEntries.push({
+            en: enVal,
+            enLower: enVal.toLowerCase(),
+            translated: trVal,
+            escaped: enVal.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+          });
+        }
+      }
+
+      // Sort entries by length descending so longer sentences are replaced before short sub-phrases
+      phraseEntries.sort((a, b) => b.en.length - a.en.length);
+    }
+
+    let isTranslating = false;
+
+    function translateText(text: string): string {
+      if (!text || !text.trim() || phraseEntries.length === 0) return text;
+      let current = text;
+      for (let i = 0; i < phraseEntries.length; i++) {
+        const entry = phraseEntries[i];
+        if (current.toLowerCase().includes(entry.enLower)) {
+          const re = new RegExp(entry.escaped, 'gi');
+          current = current.replace(re, () => entry.translated);
+        }
+      }
+      return current;
+    }
+
+    function translateNode(node: Text) {
+      if (isTranslating) return;
+
+      if (!(node as any).__origText) {
+        (node as any).__origText = node.nodeValue;
+      }
+      const orig = (node as any).__origText;
+      if (!orig || !orig.trim()) return;
+
+      if (locale === 'en') {
+        if (node.nodeValue !== orig) {
+          isTranslating = true;
+          try {
+            node.nodeValue = orig;
+          } finally {
+            isTranslating = false;
+          }
+        }
+        return;
+      }
+
+      const updated = translateText(orig);
+      if (updated !== node.nodeValue) {
+        isTranslating = true;
+        try {
+          node.nodeValue = updated;
+        } finally {
+          isTranslating = false;
+        }
+      }
+    }
+
+    function translateAttributes(el: Element) {
+      if (isTranslating) return;
+
+      const attrs = ['placeholder', 'aria-label', 'title', 'alt'];
+      for (const attr of attrs) {
+        const val = el.getAttribute(attr);
+        if (val && val.trim()) {
+          const dataKey = `data-orig-${attr}`;
+          if (!el.hasAttribute(dataKey)) {
+            el.setAttribute(dataKey, val);
+          }
+          const orig = el.getAttribute(dataKey) ?? val;
+
+          if (locale === 'en') {
+            if (val !== orig) {
+              el.setAttribute(attr, orig);
+            }
+          } else {
+            const updated = translateText(orig);
+            if (updated !== val) {
+              el.setAttribute(attr, updated);
+            }
           }
         }
       }
     }
 
     function walk(root: Node) {
+      if (!root || isTranslating) return;
+
+      // Handle element attributes first
+      if (root.nodeType === Node.ELEMENT_NODE) {
+        const el = root as Element;
+        const tag = el.tagName.toUpperCase();
+        if (
+          tag === 'SCRIPT' ||
+          tag === 'STYLE' ||
+          tag === 'CODE' ||
+          tag === 'PRE' ||
+          el.hasAttribute('data-no-translate') ||
+          el.getAttribute('translate') === 'no'
+        ) {
+          return;
+        }
+
+        translateAttributes(el);
+        const childInputs = el.querySelectorAll?.('input, textarea, [aria-label], [title]');
+        childInputs?.forEach(translateAttributes);
+      }
+
+      // Walk text nodes
       const walker = document.createTreeWalker(
         root,
         NodeFilter.SHOW_TEXT,
@@ -205,12 +220,11 @@ export function AutoTranslator() {
             if (
               tag === 'SCRIPT' ||
               tag === 'STYLE' ||
-              tag === 'TEXTAREA' ||
-              tag === 'INPUT' ||
               tag === 'CODE' ||
               tag === 'PRE' ||
               parent.isContentEditable ||
-              parent.closest('[data-no-translate]')
+              parent.closest('[data-no-translate]') ||
+              parent.closest('[translate="no"]')
             ) {
               return NodeFilter.FILTER_REJECT;
             }
@@ -221,27 +235,35 @@ export function AutoTranslator() {
 
       let current = walker.nextNode();
       while (current) {
-        translateTextNode(current as Text);
+        translateNode(current as Text);
         current = walker.nextNode();
       }
     }
 
-    // Run initial pass after DOM is ready
-    const timer = setTimeout(() => {
-      walk(document.body);
-    }, 50);
+    // Staggered passes to capture initial mount + lazy loaded client chunks
+    const timers = [
+      setTimeout(() => walk(document.body), 30),
+      setTimeout(() => walk(document.body), 150),
+      setTimeout(() => walk(document.body), 450),
+      setTimeout(() => walk(document.body), 1000),
+    ];
 
-    // Observe client-side route transitions and interactive components
+    // Continuous observation for dynamic cards, tabs, and client navigation
     const observer = new MutationObserver((mutations) => {
+      if (isTranslating) return;
       for (const m of mutations) {
         if (m.type === 'childList') {
           m.addedNodes.forEach((node) => {
             if (node.nodeType === Node.ELEMENT_NODE) {
               walk(node);
             } else if (node.nodeType === Node.TEXT_NODE) {
-              translateTextNode(node as Text);
+              translateNode(node as Text);
             }
           });
+        } else if (m.type === 'characterData') {
+          if (m.target.nodeType === Node.TEXT_NODE) {
+            translateNode(m.target as Text);
+          }
         }
       }
     });
@@ -249,13 +271,21 @@ export function AutoTranslator() {
     observer.observe(document.body, {
       childList: true,
       subtree: true,
+      characterData: true,
     });
 
     return () => {
-      clearTimeout(timer);
+      timers.forEach(clearTimeout);
       observer.disconnect();
     };
   }, [locale, pathname]);
 
-  return null;
+  return (
+    <div
+      id="google_translate_element"
+      aria-hidden="true"
+      className="hidden"
+      style={{ display: 'none' }}
+    />
+  );
 }

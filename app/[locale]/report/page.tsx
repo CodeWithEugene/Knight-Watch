@@ -30,6 +30,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useTranslation } from '@/lib/useTranslation';
 
 const reportSchema = z.object({
   title: z.string().min(5, 'Title must be at least 5 characters'),
@@ -50,15 +51,6 @@ const reportSchema = z.object({
 
 type ReportFormData = z.infer<typeof reportSchema>;
 
-const categories = [
-  { value: 'misuse-public-resources', label: 'Misuse of Public Resources (Vehicles, Offices, Staff)' },
-  { value: 'vote-buying', label: 'Voter Bribery & Handouts (Cash, Food, Goods)' },
-  { value: 'undeclared-spending', label: 'Undeclared Campaign Spending (Billboards, Rallies)' },
-  { value: 'illegal-donations', label: 'Prohibited Donations (Foreign / Dark Money)' },
-  { value: 'bribery', label: 'Bribery of Electoral or Security Officials' },
-  { value: 'other', label: 'Other Campaign Finance Malpractice' },
-];
-
 const KENYA_HOTSPOT_COUNTIES = [
   'Nairobi', 'Mombasa', 'Nakuru', 'Kiambu', 'Kisumu', 'Uasin Gishu',
   'Machakos', 'Kilifi', 'Kakamega', 'Meru', 'Nyeri', 'Garissa'
@@ -73,6 +65,16 @@ export default function ReportPage() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = pathname?.split('/')[1] || 'en';
+  const { t } = useTranslation(locale);
+
+  const categories = [
+    { value: 'misuse-public-resources', label: t('cat.misuse', 'Misuse of Public Resources (Vehicles, Offices, Staff)') },
+    { value: 'vote-buying', label: t('cat.voteBuying', 'Voter Bribery & Handouts (Cash, Food, Goods)') },
+    { value: 'undeclared-spending', label: t('cat.undeclared', 'Undeclared Campaign Spending (Billboards, Rallies)') },
+    { value: 'illegal-donations', label: t('cat.illegalDonations', 'Prohibited Donations (Foreign / Dark Money)') },
+    { value: 'bribery', label: t('cat.bribery', 'Bribery of Electoral or Security Officials') },
+    { value: 'other', label: t('cat.other', 'Other Campaign Finance Malpractice') },
+  ];
   const [submitting, setSubmitting] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -204,17 +206,17 @@ export default function ReportPage() {
         <div className="flex items-center gap-2">
           <Badge variant="outline" className="font-mono text-xs gap-1">
             <Lock className="w-3 h-3 text-foreground" />
-            <span>Encrypted Whistleblower Intake</span>
+            <span>{t('report.badgeIntake', 'Encrypted Whistleblower Intake')}</span>
           </Badge>
           <Badge variant="success" className="text-xs">
-            TI-Kenya Monitored
+            {t('report.badgeMonitored', 'TI-Kenya Monitored')}
           </Badge>
         </div>
         <h1 className="font-display font-black text-3xl sm:text-4xl text-foreground">
-          Report Campaign Finance Malpractice
+          {t('report.pageTitle', 'Report Campaign Finance Malpractice')}
         </h1>
         <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
-          Help uphold democracy in Kenya. Submit photographic evidence, location data, or observations of illegal campaign expenditures. You can report 100% anonymously without logging your identity.
+          {t('report.pageSubtitle', 'Help uphold democracy in Kenya. Submit photographic evidence, location data, or observations of illegal campaign expenditures. You can report 100% anonymously without logging your identity.')}
         </p>
 
         {/* Offline Channels Quick Link */}
@@ -224,14 +226,14 @@ export default function ReportPage() {
             className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1.5 bg-muted/50 border border-border px-3 py-1.5 rounded-lg"
           >
             <PhoneCall className="w-3.5 h-3.5 text-foreground" />
-            <span>No internet? Dial *384*11400# (USSD)</span>
+            <span>{t('home.offlineAction', 'No internet? Dial *384*11400# (USSD)')}</span>
           </Link>
           <Link
             href={`/${locale}/report/sms`}
             className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1.5 bg-muted/50 border border-border px-3 py-1.5 rounded-lg"
           >
             <MessageSquare className="w-3.5 h-3.5 text-foreground" />
-            <span>SMS Whistleblower Instructions</span>
+            <span>{t('footer.smsTip', 'SMS Whistleblower Instructions')}</span>
           </Link>
         </div>
       </div>
@@ -250,12 +252,12 @@ export default function ReportPage() {
               <span className="w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
                 1
               </span>
-              <h3 className="font-display font-bold text-base text-foreground">Incident Classification</h3>
+              <h3 className="font-display font-bold text-base text-foreground">{t('report.secClassification', 'Incident Classification')}</h3>
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                Violation Category <span className="text-red-500">*</span>
+                {t('report.categoryLabel', 'Violation Category')} <span className="text-red-500">*</span>
               </label>
               <select
                 {...register('category')}
@@ -271,11 +273,11 @@ export default function ReportPage() {
 
             <div className="space-y-2">
               <label className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                Report Title <span className="text-red-500">*</span>
+                {t('report.titleLabel', 'Report Title')} <span className="text-red-500">*</span>
               </label>
               <Input
                 {...register('title')}
-                placeholder="e.g. County fire engines & staff ferried to political rally in Kisumu Central"
+                placeholder={t('report.titlePlaceholder', 'e.g. County fire engines & staff ferried to political rally in Kisumu Central')}
                 className="h-11 text-sm"
               />
               {errors.title && (
@@ -285,12 +287,12 @@ export default function ReportPage() {
 
             <div className="space-y-2">
               <label className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                Detailed Narrative Description <span className="text-red-500">*</span>
+                {t('report.descLabel', 'Detailed Narrative Description')} <span className="text-red-500">*</span>
               </label>
               <Textarea
                 {...register('description')}
                 rows={5}
-                placeholder="Detail the date, time, political actors or party involved, approximate monetary value or vehicle plate numbers, and names of public officials present..."
+                placeholder={t('report.descPlaceholder', 'Detail the date, time, political actors or party involved, approximate monetary value or vehicle plate numbers, and names of public officials present...')}
                 className="text-sm leading-relaxed"
               />
               {errors.description && (
@@ -305,16 +307,16 @@ export default function ReportPage() {
               <span className="w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
                 2
               </span>
-              <h3 className="font-display font-bold text-base text-foreground">Geographic Location</h3>
+              <h3 className="font-display font-bold text-base text-foreground">{t('report.secLocation', 'Geographic Location')}</h3>
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                County, Constituency, or Ward <span className="text-red-500">*</span>
+                {t('report.locationLabel', 'County, Constituency, or Ward')} <span className="text-red-500">*</span>
               </label>
               <Input
                 {...register('location')}
-                placeholder="e.g. Nakuru Town West, Kaptembwo Ward"
+                placeholder={t('report.locationPlaceholder', 'e.g. Nakuru Town West, Kaptembwo Ward')}
                 className="h-11 text-sm"
               />
               {errors.location && (
@@ -323,7 +325,7 @@ export default function ReportPage() {
 
               {/* County Hotspot Chips */}
               <div className="flex flex-wrap items-center gap-1.5 pt-1.5">
-                <span className="text-[11px] text-muted-foreground mr-1">Quick Select:</span>
+                <span className="text-[11px] text-muted-foreground mr-1">{t('report.quickSelect', 'Quick Select:')}</span>
                 {KENYA_HOTSPOT_COUNTIES.slice(0, 7).map((c) => (
                   <button
                     key={c}
@@ -344,7 +346,7 @@ export default function ReportPage() {
               <span className="w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
                 3
               </span>
-              <h3 className="font-display font-bold text-base text-foreground">Evidence & Documentation</h3>
+              <h3 className="font-display font-bold text-base text-foreground">{t('report.secEvidence', 'Evidence & Documentation')}</h3>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -352,10 +354,10 @@ export default function ReportPage() {
               <div className="p-4 rounded-xl border border-dashed border-border bg-muted/20 space-y-3">
                 <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
                   <ImageIcon className="w-4 h-4 text-foreground" />
-                  <span>Photos (Max {MAX_IMAGES})</span>
+                  <span>{t('report.photosTitle', 'Photos (Max 5)')}</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Upload banners, cash distribution, vehicle number plates (Max 5MB each).
+                  {t('report.photosDesc', 'Upload banners, cash distribution, vehicle number plates (Max 5MB each).')}
                 </p>
                 <input
                   ref={fileInputRef}
@@ -373,7 +375,7 @@ export default function ReportPage() {
                   className="w-full text-xs h-9"
                 >
                   <UploadCloud className="w-3.5 h-3.5 mr-1.5" />
-                  <span>Select Images ({imageFiles.length}/{MAX_IMAGES})</span>
+                  <span>{t('report.selectImages', 'Select Images')} ({imageFiles.length}/{MAX_IMAGES})</span>
                 </Button>
 
                 {imageFiles.length > 0 && (
@@ -398,10 +400,10 @@ export default function ReportPage() {
               <div className="p-4 rounded-xl border border-dashed border-border bg-muted/20 space-y-3">
                 <div className="flex items-center gap-2 text-foreground font-semibold text-sm">
                   <Video className="w-4 h-4 text-blue-600" />
-                  <span>Video Clip (Max 1 File)</span>
+                  <span>{t('report.videoTitle', 'Video Clip (Max 1 File)')}</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Short video documenting the activity (Max 50MB).
+                  {t('report.videoDesc', 'Short video documenting the activity (Max 50MB).')}
                 </p>
                 <input
                   ref={videoInputRef}
@@ -418,7 +420,7 @@ export default function ReportPage() {
                   className="w-full text-xs h-9"
                 >
                   <UploadCloud className="w-3.5 h-3.5 mr-1.5" />
-                  <span>{videoFile ? 'Change Video' : 'Select Video'}</span>
+                  <span>{videoFile ? t('report.changeVideo', 'Change Video') : t('report.selectVideo', 'Select Video')}</span>
                 </Button>
 
                 {videoFile && (
@@ -450,7 +452,7 @@ export default function ReportPage() {
               <span className="w-6 h-6 rounded-full bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">
                 4
               </span>
-              <h3 className="font-display font-bold text-base text-foreground">Whistleblower Protection</h3>
+              <h3 className="font-display font-bold text-base text-foreground">{t('report.secProtection', 'Whistleblower Protection')}</h3>
             </div>
 
             <div className="p-4 rounded-xl border border-border bg-muted/20 space-y-3">
@@ -462,10 +464,10 @@ export default function ReportPage() {
                 />
                 <div>
                   <span className="font-semibold text-sm text-foreground">
-                    Submit as Anonymous Citizen
+                    {t('report.anonymousCheck', 'Submit as Anonymous Citizen')}
                   </span>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Your IP address and device fingerprint will NOT be linked or recorded with this dossier.
+                    {t('report.anonymousDesc', 'Your IP address and device fingerprint will NOT be linked or recorded with this dossier.')}
                   </p>
                 </div>
               </label>
@@ -473,16 +475,16 @@ export default function ReportPage() {
               {!isAnonymous && (
                 <div className="pt-3 border-t border-border space-y-2">
                   <label className="text-xs font-semibold uppercase tracking-wider text-foreground">
-                    Follow-Up Email Address (Confidential)
+                    {t('report.emailLabel', 'Follow-Up Email Address (Confidential)')}
                   </label>
                   <Input
                     {...register('email')}
                     type="email"
-                    placeholder="e.g. auditor@example.com"
+                    placeholder={t('report.emailPlaceholder', 'e.g. auditor@example.com')}
                     className="h-10 text-sm"
                   />
                   <p className="text-[11px] text-muted-foreground">
-                    Used only if TI-Kenya investigators require additional clarification on this report.
+                    {t('report.emailDesc', 'Used only if TI-Kenya investigators require additional clarification on this report.')}
                   </p>
                 </div>
               )}
@@ -495,9 +497,9 @@ export default function ReportPage() {
             className="w-full h-12 font-bold text-base shadow-sm gap-2"
           >
             {submitting ? (
-              <><Spinner data-icon="inline-start" /> Encrypting & Dispatching...</>
+              <><Spinner data-icon="inline-start" /> {t('report.submittingBtn', 'Encrypting & Dispatching...')}</>
             ) : (
-              <><FileWarning className="w-5 h-5" /> Submit Incident Report</>
+              <><FileWarning className="w-5 h-5" /> {t('report.submitBtn', 'Submit Incident Report')}</>
             )}
           </Button>
         </form>

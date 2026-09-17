@@ -77,9 +77,9 @@ export default function HomePage() {
           <div className="pt-2 fade-in-up stagger-4">
             <div className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground border border-border px-4 py-2 rounded-full shadow-xs text-xs font-medium">
               <PhoneCall className="w-3.5 h-3.5 text-foreground shrink-0" />
-              <span>{t('home.offlineTitle')} — Dial</span>
+              <span>{t('home.offlineTitle', 'Offline Whistleblower Channel')}:</span>
               <span className="font-mono font-bold text-foreground bg-background/80 px-2 py-0.5 rounded-full border border-border/80">*384*11400#</span>
-              <span>on any mobile phone in Kenya</span>
+              <span>({t('common.anonymous', 'Anonymous')})</span>
             </div>
           </div>
         </div>
@@ -158,9 +158,9 @@ export default function HomePage() {
                 {t('home.quickReportDesc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                <Badge variant="secondary" className="text-[11px]">Photo Uploads</Badge>
-                <Badge variant="secondary" className="text-[11px]">USSD *384*11400#</Badge>
-                <Badge variant="secondary" className="text-[11px]">SMS Gateway</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.photoUploads', 'Photo Uploads')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.ussd', 'USSD *384*11400#')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.smsGateway', 'SMS Gateway')}</Badge>
               </div>
             </div>
             <Button asChild variant="default" className="w-full mt-4">
@@ -182,9 +182,9 @@ export default function HomePage() {
                 {t('home.quickMapDesc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                <Badge variant="secondary" className="text-[11px]">County Heatmap</Badge>
-                <Badge variant="secondary" className="text-[11px]">Incident Pins</Badge>
-                <Badge variant="secondary" className="text-[11px]">Filter by Party</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.countyHeatmap', 'County Heatmap')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.incidentPins', 'Incident Pins')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.filterParty', 'Filter by Party')}</Badge>
               </div>
             </div>
             <Button asChild variant="outline" className="w-full mt-4 border-border">
@@ -206,9 +206,9 @@ export default function HomePage() {
                 {t('home.quickIntelligenceDesc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                <Badge variant="secondary" className="text-[11px]">Gemini 1.5</Badge>
-                <Badge variant="secondary" className="text-[11px]">Fact Checking</Badge>
-                <Badge variant="secondary" className="text-[11px]">Public Records</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.gemini', 'Gemini 1.5')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.factChecking', 'Fact Checking')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.publicRecords', 'Public Records')}</Badge>
               </div>
             </div>
             <Button asChild variant="outline" className="w-full mt-4 border-border">
@@ -230,9 +230,9 @@ export default function HomePage() {
                 {t('home.quickMchangoDesc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                <Badge variant="secondary" className="text-[11px]">Paystack API</Badge>
-                <Badge variant="secondary" className="text-[11px]">Public Ledger</Badge>
-                <Badge variant="secondary" className="text-[11px]">Statutory Caps</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.paystackApi', 'Paystack API')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.publicLedger', 'Public Ledger')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.statutoryCaps', 'Statutory Caps')}</Badge>
               </div>
             </div>
             <Button asChild variant="outline" className="w-full mt-4 border-border">
@@ -254,9 +254,9 @@ export default function HomePage() {
                 {t('home.quickCalculatorDesc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                <Badge variant="secondary" className="text-[11px]">Statutory Formula</Badge>
-                <Badge variant="secondary" className="text-[11px]">County Multipliers</Badge>
-                <Badge variant="secondary" className="text-[11px]">IEBC Ceilings</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.statutoryFormula', 'Statutory Formula')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.countyMultipliers', 'County Multipliers')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.iebcCeilings', 'IEBC Ceilings')}</Badge>
               </div>
             </div>
             <Button asChild variant="outline" className="w-full mt-4 border-border">
@@ -278,9 +278,9 @@ export default function HomePage() {
                 {t('home.quickLearnDesc')}
               </p>
               <div className="flex flex-wrap gap-1.5 pt-1">
-                <Badge variant="secondary" className="text-[11px]">PPF Formula</Badge>
-                <Badge variant="secondary" className="text-[11px]">Download Kit</Badge>
-                <Badge variant="secondary" className="text-[11px]">FAQs</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.ppfFormula', 'PPF Formula')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.downloadKit', 'Download Kit')}</Badge>
+                <Badge variant="secondary" className="text-[11px]">{t('badge.faqs', 'FAQs')}</Badge>
               </div>
             </div>
             <Button asChild variant="outline" className="w-full mt-4 border-border">
@@ -312,7 +312,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
               <div className="space-y-2 border-l-2 border-primary pl-4">
-                <p className="font-mono text-xs font-bold text-primary">STEP 01</p>
+                <p className="font-mono text-xs font-bold text-primary">{t('step.01', 'STEP 01')}</p>
                 <h4 className="font-display font-bold text-base">{t('home.step1Title', 'Anonymous Intake')}</h4>
                 <p className="text-xs text-muted-foreground">
                   {t('home.step1Desc', 'No IP addresses or personal identifiers are stored. Works via web form, offline USSD, or encrypted SMS.')}
@@ -320,7 +320,7 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-2 border-l-2 border-primary pl-4">
-                <p className="font-mono text-xs font-bold text-primary">STEP 02</p>
+                <p className="font-mono text-xs font-bold text-primary">{t('step.02', 'STEP 02')}</p>
                 <h4 className="font-display font-bold text-base">{t('home.step2Title', 'Evidence Hashing')}</h4>
                 <p className="text-xs text-muted-foreground">
                   {t('home.step2Desc', 'Photos, video timestamps, and geolocation tags are cryptographically hashed to prevent tampering.')}
@@ -328,7 +328,7 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-2 border-l-2 border-primary pl-4">
-                <p className="font-mono text-xs font-bold text-primary">STEP 03</p>
+                <p className="font-mono text-xs font-bold text-primary">{t('step.03', 'STEP 03')}</p>
                 <h4 className="font-display font-bold text-base">{t('home.step3Title', 'Independent Fact-Check')}</h4>
                 <p className="text-xs text-muted-foreground">
                   {t('home.step3Desc', 'Civic monitors cross-verify claims against official gazettes, rally schedules, and procurement records.')}
@@ -336,7 +336,7 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-2 border-l-2 border-primary pl-4">
-                <p className="font-mono text-xs font-bold text-primary">STEP 04</p>
+                <p className="font-mono text-xs font-bold text-primary">{t('step.04', 'STEP 04')}</p>
                 <h4 className="font-display font-bold text-base">{t('home.step4Title', 'Oversight Referral')}</h4>
                 <p className="text-xs text-muted-foreground">
                   {t('home.step4Desc', 'Verified dossiers are published to the public dashboard and dispatched to TI-Kenya, IEBC, and EACC.')}

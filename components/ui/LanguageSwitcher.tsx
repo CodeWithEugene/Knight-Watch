@@ -27,6 +27,20 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
   const currentName = currentLocaleObj?.name ?? 'English';
   const shortName = currentLocaleObj?.name.split(' ')[0] ?? 'English';
 
+  const handleLocaleSelect = (locCode: string) => {
+    const googleCode = locCode === 'sw' ? 'sw' : locCode === 'so' ? 'so' : locCode === 'gax' ? 'om' : null;
+    try {
+      if (googleCode) {
+        document.cookie = `googtrans=/en/${googleCode}; path=/;`;
+        document.cookie = `googtrans=/en/${googleCode}; domain=${window.location.hostname}; path=/;`;
+      } else {
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${window.location.hostname}; path=/;`;
+      }
+    } catch {}
+    setOpen(false);
+  };
+
   return (
     <div className={`relative inline-block text-left shrink-0 ${className}`} ref={ref}>
       <button
@@ -56,7 +70,7 @@ export function LanguageSwitcher({ className = '' }: { className?: string }) {
               <Link
                 key={loc.code}
                 href={`/${loc.code}${pathWithoutLocale}`}
-                onClick={() => setOpen(false)}
+                onClick={() => handleLocaleSelect(loc.code)}
                 role="option"
                 aria-selected={isSelected}
                 className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors hover:bg-accent hover:text-accent-foreground ${

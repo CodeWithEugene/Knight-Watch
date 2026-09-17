@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/convex/_generated/api';
+import { notifyMchangoReceipt } from '@/lib/notify';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -47,6 +48,20 @@ export async function GET(request: NextRequest) {
           });
         } catch (convErr) {
           console.warn('Convex update from verify route warning:', convErr);
+        }
+      }
+      // One-time Mchango receipt (atomic claim inside; safe under polling).
+      const payerEmail = typeof data.customer?.email === 'string' ? data.customer.email : '';
+      if (payerEmail && typeof data.amount === 'number') {
+        try {
+          await notifyMchangoReceipt({
+            paystackReference: reference,
+            payerEmail,
+            amountKes: Math.round(data.amount / 100),
+            paidAt: typeof data.paid_at === 'string' ? data.paid_at : undefined,
+          });
+        } catch (mailErr) {
+          console.warn('Mchango receipt email warning:', mailErr);
         }
       }
     }

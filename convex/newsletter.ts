@@ -40,6 +40,17 @@ export const list = query({
   },
 });
 
+/** Public: verify a subscription exists before sending confirmation email. */
+export const getByEmail = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query('newsletter_subscribers')
+      .withIndex('by_email', (q) => q.eq('email', args.email))
+      .first();
+  },
+});
+
 /** Seed dummy newsletter subscribers. Run: npx convex run newsletter:seedDummyData */
 export const seedDummyData = mutation({
   args: {},

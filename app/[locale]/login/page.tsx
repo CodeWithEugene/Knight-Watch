@@ -121,6 +121,12 @@ function LoginForm() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-semibold text-foreground">Password</label>
+                  <Link
+                    href={`/${locale}/forgot-password${callbackUrl !== `/${locale}` ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+                    className="text-[11px] text-primary font-semibold hover:underline"
+                  >
+                    Forgot password?
+                  </Link>
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -149,7 +155,7 @@ function LoginForm() {
               <div className="text-center text-xs text-muted-foreground pt-1">
                 Don&apos;t have an account yet?{' '}
                 <Link
-                  href={`/${locale}/signup`}
+                  href={`/${locale}/signup${callbackUrl !== `/${locale}` ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
                   className="text-primary font-semibold hover:underline"
                 >
                   Create one here

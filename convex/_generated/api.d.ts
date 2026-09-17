@@ -15,6 +15,7 @@ import type * as files from "../files.js";
 import type * as newsletter from "../newsletter.js";
 import type * as notifications from "../notifications.js";
 import type * as parties from "../parties.js";
+import type * as passwordReset from "../passwordReset.js";
 import type * as reports from "../reports.js";
 import type * as users from "../users.js";
 import type * as webhooks from "../webhooks.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   newsletter: typeof newsletter;
   notifications: typeof notifications;
   parties: typeof parties;
+  passwordReset: typeof passwordReset;
   reports: typeof reports;
   users: typeof users;
   webhooks: typeof webhooks;

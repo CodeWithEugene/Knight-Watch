@@ -31,6 +31,12 @@ export default function AlertsPage() {
       if (subscribe) {
         await subscribe({ email, preferences: { alerts: true, digest: true } });
       }
+      // Subscription confirmation email (fire-and-forget; server verifies first).
+      fetch('/api/notify/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      }).catch(() => {});
       setSubmitted(true);
     } catch (err) {
       // Mock success if Convex is not linked locally

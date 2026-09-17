@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { LOCALE_CODES } from './lib/locales';
 
-const PROTECTED_SEGMENTS = ['report', 'mchango', 'map', 'dashboard', 'reports', 'transparency', 'calculator'];
+const PROTECTED_SEGMENTS = ['mchango', 'map', 'dashboard', 'reports', 'transparency', 'calculator'];
 
 function isKnownLocale(segment: string): boolean {
   return (LOCALE_CODES as readonly string[]).includes(segment);

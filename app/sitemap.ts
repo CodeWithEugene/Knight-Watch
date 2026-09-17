@@ -4,12 +4,14 @@ import { SITE_URL, ROUTE_SEO, KENYA_COUNTY_SLUGS } from '@/lib/seo';
 
 /**
  * Only publicly crawlable routes are listed. Auth-gated segments
- * (report, mchango, map, dashboard, reports, transparency, calculator)
+ * (mchango, map, dashboard, reports, transparency, calculator)
  * 307-redirect to /login in middleware, so including them would feed
  * crawlers redirect URLs — they keep their metadata layouts for
  * authenticated sharing but stay out of the sitemap.
+ * Note: /report (singular) is intentionally public — anyone can file
+ * a report without an account.
  */
-const GATED_TOP_SEGMENTS = new Set(['report', 'mchango', 'map', 'dashboard', 'reports', 'transparency', 'calculator']);
+const GATED_TOP_SEGMENTS = new Set(['mchango', 'map', 'dashboard', 'reports', 'transparency', 'calculator']);
 
 function isPublic(path: string): boolean {
   if (!path) return true;

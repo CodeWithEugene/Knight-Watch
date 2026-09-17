@@ -2,6 +2,25 @@ import NextAuth from 'next-auth';
 import type { NextAuthOptions } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { getServerSession } from 'next-auth';
+import { sendEmail } from '@/lib/email';
+import { emailTemplates } from '@/lib/emailTemplates';
+
+/** Fire-and-forget sign-in security alert — never blocks authentication. */
+function notifyLogin(email: string) {
+  try {
+    const when = new Date().toLocaleString('en-KE', {
+      timeZone: 'Africa/Nairobi',
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    });
+    const template = emailTemplates.loginAlert(`${when} EAT`);
+    void sendEmail({ to: email, subject: template.subject, html: template.html }).catch((err) =>
+      console.error('[auth] login alert email failed:', err)
+    );
+  } catch (err) {
+    console.error('[auth] login alert email failed:', err);
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,11 +46,17 @@ export const authOptions: NextAuthOptions = {
 
           // 1. Try admin (from Convex admins table)
           const admin = await client.action(api.auth.verifyAdmin, { email, password });
-          if (admin) return admin;
+          if (admin) {
+            notifyLogin(admin.email);
+            return admin;
+          }
 
           // 2. Try Convex user
           const user = await client.action(api.auth.verifyUser, { email, password });
-          if (user) return { id: user.id, email: user.email, name: user.name ?? 'User', role: 'user' };
+          if (user) {
+            notifyLogin(user.email);
+            return { id: user.id, email: user.email, name: user.name ?? 'User', role: 'user' };
+          }
         } catch (err) {
           console.error('[auth] Convex auth failed:', err);
         }

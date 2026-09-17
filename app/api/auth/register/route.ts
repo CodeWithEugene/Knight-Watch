@@ -4,6 +4,8 @@ import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/convex/_generated/api';
 import { validatePassword } from '@/lib/password';
 import { checkRateLimit } from '@/lib/rateLimit';
+import { sendEmail } from '@/lib/email';
+import { emailTemplates } from '@/lib/emailTemplates';
 import type { NextRequest } from 'next/server';
 
 // Basic email format validation
@@ -64,6 +66,14 @@ export async function POST(request: NextRequest) {
       passwordHash,
       name: name || undefined,
     });
+
+    // Welcome email — never blocks registration.
+    try {
+      const template = emailTemplates.welcomeSignup(name);
+      await sendEmail({ to: email, subject: template.subject, html: template.html });
+    } catch (err) {
+      console.error('[auth] welcome email failed:', err);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

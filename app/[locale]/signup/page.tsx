@@ -164,7 +164,7 @@ function SignupForm() {
               <div className="text-center text-xs text-muted-foreground pt-1">
                 Already registered?{' '}
                 <Link
-                  href={`/${locale}/login`}
+                  href={`/${locale}/login${callbackUrl !== `/${locale}` ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
                   className="text-primary font-semibold hover:underline"
                 >
                   Sign in here

@@ -89,6 +89,7 @@ export default defineSchema({
       v.literal('abandoned')
     ),
     email: v.optional(v.string()),
+    receiptEmailedAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -126,6 +127,16 @@ export default defineSchema({
     name: v.optional(v.string()),
     createdAt: v.number(),
   }).index('by_email', ['email']),
+
+  passwordResetTokens: defineTable({
+    userId: v.id('users'),
+    tokenHash: v.string(),
+    expiresAt: v.number(),
+    usedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  })
+    .index('by_tokenHash', ['tokenHash'])
+    .index('by_user', ['userId']),
 
   notifications: defineTable({
     userId: v.string(),

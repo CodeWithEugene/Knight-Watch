@@ -72,7 +72,9 @@ export type RouteKey =
   | 'terms'
   | 'transparency'
   | 'transparency-party'
-  | 'trends';
+  | 'trends'
+  | 'forgot-password'
+  | 'reset-password';
 
 interface RouteSeo {
   /** Path segment without locale, e.g. 'learn/faq'. Empty string = locale home. */
@@ -516,6 +518,20 @@ export const ROUTE_SEO: Record<RouteKey, RouteSeo> = {
     keywords: ['campaign finance trends Kenya', 'election violations statistics', 'PPF history Kenya'],
     changeFrequency: 'weekly',
     priority: 0.7,
+  },
+  'forgot-password': {
+    path: 'forgot-password',
+    title: 'Forgot Password | Knight Watch',
+    description: 'Request a one-time password reset link for your Knight Watch citizen account.',
+    keywords: [],
+    index: false,
+  },
+  'reset-password': {
+    path: 'reset-password',
+    title: 'Set New Password | Knight Watch',
+    description: 'Choose a new password for your Knight Watch citizen account.',
+    keywords: [],
+    index: false,
   },
 };
 

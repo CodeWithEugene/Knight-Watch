@@ -77,6 +77,28 @@ export const getByReference = query({
   },
 });
 
+/**
+ * Public: atomically claim the one-time receipt email for a successful
+ * contribution. Returns the contribution only to the first claimer,
+ * giving the polling verify route exactly-once receipt semantics.
+ * Safe to expose: the receipt only ever goes to the payer's own address.
+ */
+export const claimReceiptEmail = mutation({
+  args: { paystackReference: v.string() },
+  handler: async (ctx, args) => {
+    const list = await ctx.db
+      .query('contributions')
+      .filter((q) => q.eq(q.field('paystackReference'), args.paystackReference))
+      .take(1);
+    const contribution = list[0] ?? null;
+    if (!contribution || contribution.status !== 'success' || contribution.receiptEmailedAt) {
+      return { claimed: false, contribution: null };
+    }
+    await ctx.db.patch(contribution._id, { receiptEmailedAt: Date.now(), updatedAt: Date.now() });
+    return { claimed: true, contribution };
+  },
+});
+
 export const totalsByParty = query({
   args: { limit: v.optional(v.number()) },
   handler: async (ctx, args) => {

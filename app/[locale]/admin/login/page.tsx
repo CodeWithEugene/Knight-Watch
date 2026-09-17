@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { BrandLogo } from '@/components/layout/BrandLogo';
+import { getSafeCallbackUrl } from '@/lib/authRedirect';
 import { ShieldAlert, Lock, Mail, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function AdminLoginPage() {
@@ -16,7 +17,8 @@ export default function AdminLoginPage() {
   const locale = pathname?.split('/')[1] || 'en';
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || `/${locale}/admin`;
+  const safeCallback = getSafeCallbackUrl(searchParams.get('callbackUrl'), locale);
+  const callbackUrl = safeCallback === `/${locale}` ? `/${locale}/admin` : safeCallback;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

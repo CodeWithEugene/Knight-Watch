@@ -131,6 +131,12 @@ export default function ReportPage() {
         mediaIds: mediaIds?.length ? mediaIds : undefined,
         source: 'web',
       });
+      // Reporter acknowledgment + investigator alert (fire-and-forget).
+      fetch('/api/notify/report-received', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportId, locale }),
+      }).catch(() => {});
       router.push(`/${locale}/report/success?id=${reportId}`);
     } catch {
       // If Convex isn't connected yet, generate an offline ticket ID

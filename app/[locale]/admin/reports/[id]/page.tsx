@@ -86,6 +86,12 @@ export default function AdminReportDetailPage() {
           internalNotes: internalNote || report.internalNotes || undefined,
           assignToSelf: true,
         });
+        // Reporter status-update email (fire-and-forget; server re-reads state).
+        fetch('/api/notify/report-status', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ reportId: id, locale }),
+        }).catch(() => {});
       }
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);

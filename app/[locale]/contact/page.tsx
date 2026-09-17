@@ -24,14 +24,29 @@ export default function ContactPage() {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [sendError, setSendError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    setSendError('');
+    try {
+      const res = await fetch('/api/notify/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setSendError(data.error || 'Message service is temporarily unavailable. Please try again later.');
+        return;
+      }
       setSubmitted(true);
-    }, 600);
+    } catch {
+      setSendError('Something went wrong. Please check your connection and try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -132,7 +147,10 @@ export default function ContactPage() {
                     </div>
                   </CardContent>
 
-                  <CardFooter className="pt-2">
+                  <CardFooter className="pt-2 flex-col gap-3">
+                    {sendError && (
+                      <p className="text-xs text-red-700 dark:text-red-300 text-center">{sendError}</p>
+                    )}
                     <Button type="submit" disabled={loading} className="w-full font-bold text-xs h-10 gap-2">
                       <Send className="w-3.5 h-3.5" />
                       {loading ? 'Transmitting...' : 'Send Message'}

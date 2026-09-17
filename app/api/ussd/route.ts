@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { ConvexHttpClient } from 'convex/browser';
 import { api } from '@/convex/_generated/api';
+import { notifyReportReceived } from '@/lib/notify';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -409,6 +410,8 @@ export async function POST(request: NextRequest) {
 
             const createdId = await Promise.race([convexMutation, timeoutGuard]);
             finalReportId = String(createdId);
+            // Investigator alert (fire-and-forget — never delay the USSD session).
+            void notifyReportReceived(finalReportId, 'en').catch(() => {});
           } catch (createErr) {
             console.error('[USSD Convex Mutation Error]', createErr);
           }

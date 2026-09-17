@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { X, CheckCircle2, AlertCircle, Loader2, ShieldCheck, ArrowRight, RefreshCw, Lock } from 'lucide-react';
@@ -47,6 +47,11 @@ export function MchangoModal({
 
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const handleClose = useCallback(() => {
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    onClose();
+  }, [onClose]);
+
   // Sync props when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -55,10 +60,20 @@ export function MchangoModal({
       setStep('form');
       setErrorMessage('');
       setSubmitting(false);
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          handleClose();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        window.removeEventListener('keydown', handleKeyDown);
+      };
     } else {
       if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     }
-  }, [isOpen, defaultPartySlug, defaultAmount]);
+  }, [isOpen, defaultPartySlug, defaultAmount, handleClose]);
 
   // Clean up interval on unmount
   useEffect(() => {
@@ -173,15 +188,15 @@ export function MchangoModal({
     }
   };
 
-  const handleClose = () => {
-    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-    onClose();
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 dark:bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) handleClose();
+      }}
+    >
       <div 
-        className="relative w-full max-w-[440px] rounded-3xl bg-[#111214] border border-zinc-800/80 shadow-2xl p-6 sm:p-7 text-white overflow-hidden"
+        className="relative w-full max-w-[440px] rounded-3xl bg-card border border-border shadow-2xl p-6 sm:p-7 text-card-foreground overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
@@ -189,7 +204,7 @@ export function MchangoModal({
         <button
           type="button"
           onClick={handleClose}
-          className="absolute top-5 right-5 size-8 rounded-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-400 hover:text-white flex items-center justify-center transition-colors focus:outline-none"
+          className="absolute top-5 right-5 size-8 rounded-full bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors focus:outline-none cursor-pointer"
           aria-label="Close modal"
         >
           <X className="size-4" />
@@ -200,7 +215,7 @@ export function MchangoModal({
           <form onSubmit={handleStartCharge} className="space-y-5">
             {/* Top Emblem / Icon Header */}
             <div className="text-center space-y-2 pt-1">
-              <div className="mx-auto size-14 rounded-2xl bg-zinc-900 border border-zinc-700/80 p-1.5 flex items-center justify-center shadow-inner group">
+              <div className="mx-auto size-14 rounded-2xl bg-muted/80 border border-border p-1.5 flex items-center justify-center shadow-inner group">
                 {currentParty.logo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -209,28 +224,30 @@ export function MchangoModal({
                     className="w-full h-full object-contain rounded-xl"
                   />
                 ) : (
-                  <ShieldCheck className="size-7 text-emerald-400" />
+                  <ShieldCheck className="size-7 text-emerald-500" />
                 )}
               </div>
 
               <div>
-                <h3 className="text-xl sm:text-2xl font-black font-display tracking-tight text-white">
+                <h3 className="text-xl sm:text-2xl font-black font-display tracking-tight text-foreground">
                   Contribute to {currentParty.acronym || currentParty.name}
                 </h3>
-                <p className="text-xs text-zinc-400 mt-1 flex items-center justify-center gap-1">
-                  Support campaign integrity with M-Pesa 🇰🇪 or
+                <p className="text-xs text-muted-foreground mt-1 flex items-center justify-center gap-1">
+                  Support campaign integrity with M-Pesa 🇰🇪, Airtel Money, or Card
                 </p>
               </div>
             </div>
 
             {/* Payment Method Switcher (Official Logos) */}
-            <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-zinc-900/90 border border-zinc-800">
+            <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-muted/60 border border-border">
               {/* M-PESA */}
               <button
                 type="button"
                 onClick={() => setPaymentMethod('mpesa')}
-                className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl transition-all ${
-                  paymentMethod === 'mpesa' ? 'bg-zinc-800/90 text-white' : 'opacity-40 hover:opacity-80'
+                className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl transition-all cursor-pointer ${
+                  paymentMethod === 'mpesa'
+                    ? 'bg-card text-card-foreground shadow-xs border border-border/80 font-medium'
+                    : 'text-muted-foreground opacity-60 hover:opacity-100 hover:bg-card/50'
                 }`}
               >
                 <div className="h-6 flex items-center justify-center">
@@ -246,8 +263,10 @@ export function MchangoModal({
               <button
                 type="button"
                 onClick={() => setPaymentMethod('airtel')}
-                className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl transition-all ${
-                  paymentMethod === 'airtel' ? 'bg-zinc-800/90 text-white' : 'opacity-40 hover:opacity-80'
+                className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl transition-all cursor-pointer ${
+                  paymentMethod === 'airtel'
+                    ? 'bg-card text-card-foreground shadow-xs border border-border/80 font-medium'
+                    : 'text-muted-foreground opacity-60 hover:opacity-100 hover:bg-card/50'
                 }`}
               >
                 <div className="h-6 flex items-center justify-center">
@@ -263,8 +282,10 @@ export function MchangoModal({
               <button
                 type="button"
                 onClick={() => setPaymentMethod('card')}
-                className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl transition-all ${
-                  paymentMethod === 'card' ? 'bg-zinc-800/90 text-white' : 'opacity-40 hover:opacity-80'
+                className={`relative flex flex-col items-center justify-center py-2.5 px-2 rounded-xl transition-all cursor-pointer ${
+                  paymentMethod === 'card'
+                    ? 'bg-card text-card-foreground shadow-xs border border-border/80 font-medium'
+                    : 'text-muted-foreground opacity-60 hover:opacity-100 hover:bg-card/50'
                 }`}
               >
                 <div className="h-6 flex items-center justify-center">
@@ -279,7 +300,7 @@ export function MchangoModal({
 
             {/* Error Banner if any */}
             {errorMessage && (
-              <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-400 flex items-start gap-2">
+              <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-start gap-2">
                 <AlertCircle className="size-4 shrink-0 mt-0.5" />
                 <span>{errorMessage}</span>
               </div>
@@ -288,7 +309,7 @@ export function MchangoModal({
             {/* Dynamic Input: Phone or Card */}
             {paymentMethod === 'mpesa' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">
+                <label className="text-xs font-semibold text-foreground">
                   Your M-Pesa Phone Number
                 </label>
                 <input
@@ -296,7 +317,7 @@ export function MchangoModal({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="0712345678 or +254712345678"
-                  className="w-full h-12 px-4 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 font-mono text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all"
+                  className="w-full h-12 px-4 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground font-mono text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all"
                   required
                 />
               </div>
@@ -304,7 +325,7 @@ export function MchangoModal({
 
             {paymentMethod === 'airtel' && (
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-zinc-300">
+                <label className="text-xs font-semibold text-foreground">
                   Your Airtel Money Phone Number
                 </label>
                 <input
@@ -312,7 +333,7 @@ export function MchangoModal({
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="0732345678 or +254732345678"
-                  className="w-full h-12 px-4 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 font-mono text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all"
+                  className="w-full h-12 px-4 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground font-mono text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-all"
                   required
                 />
               </div>
@@ -321,7 +342,7 @@ export function MchangoModal({
             {paymentMethod === 'card' && (
               <div className="space-y-2.5">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-zinc-300">
+                  <label className="text-xs font-semibold text-foreground">
                     Card Number
                   </label>
                   <input
@@ -330,45 +351,45 @@ export function MchangoModal({
                     onChange={(e) => setCard({ ...card, number: e.target.value })}
                     placeholder="1234 5678 9012 3456"
                     maxLength={19}
-                    className="w-full h-12 px-4 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 font-mono text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none transition-all"
+                    className="w-full h-12 px-4 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground font-mono text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                     required
                   />
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
                   <div className="space-y-1">
-                    <label className="text-[11px] text-zinc-400">Month</label>
+                    <label className="text-[11px] text-muted-foreground">Month</label>
                     <input
                       type="text"
                       value={card.expiry_month}
                       onChange={(e) => setCard({ ...card, expiry_month: e.target.value })}
                       placeholder="MM"
                       maxLength={2}
-                      className="w-full h-11 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 font-mono text-xs text-center focus:border-amber-500 outline-none"
+                      className="w-full h-11 px-3 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground font-mono text-xs text-center focus:border-primary outline-none"
                       required
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[11px] text-zinc-400">Year</label>
+                    <label className="text-[11px] text-muted-foreground">Year</label>
                     <input
                       type="text"
                       value={card.expiry_year}
                       onChange={(e) => setCard({ ...card, expiry_year: e.target.value })}
                       placeholder="YY"
                       maxLength={4}
-                      className="w-full h-11 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 font-mono text-xs text-center focus:border-amber-500 outline-none"
+                      className="w-full h-11 px-3 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground font-mono text-xs text-center focus:border-primary outline-none"
                       required
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[11px] text-zinc-400">CVV</label>
+                    <label className="text-[11px] text-muted-foreground">CVV</label>
                     <input
                       type="password"
                       value={card.cvv}
                       onChange={(e) => setCard({ ...card, cvv: e.target.value })}
                       placeholder="CVC"
                       maxLength={4}
-                      className="w-full h-11 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder:text-zinc-600 font-mono text-xs text-center focus:border-amber-500 outline-none"
+                      className="w-full h-11 px-3 rounded-xl bg-background border border-input text-foreground placeholder:text-muted-foreground font-mono text-xs text-center focus:border-primary outline-none"
                       required
                     />
                   </div>
@@ -378,7 +399,7 @@ export function MchangoModal({
 
             {/* Input: Amount (KES) */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-300">
+              <label className="text-xs font-semibold text-foreground">
                 Amount (KES)
               </label>
               <input
@@ -387,7 +408,7 @@ export function MchangoModal({
                 max={1000000}
                 value={amount || ''}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="w-full h-12 px-4 rounded-xl bg-zinc-900 border border-zinc-800 text-white font-bold text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                className="w-full h-12 px-4 rounded-xl bg-background border border-input text-foreground font-bold text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                 required
               />
 
@@ -398,10 +419,10 @@ export function MchangoModal({
                     key={val}
                     type="button"
                     onClick={() => setAmount(val)}
-                    className={`py-2 px-1 rounded-xl text-xs font-semibold border transition-all ${
+                    className={`py-2 px-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
                       amount === val
-                        ? 'bg-[#1b253b] border-[#2563eb] text-blue-400 shadow-sm'
-                        : 'bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                        ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                        : 'bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted'
                     }`}
                   >
                     KES {val.toLocaleString()}
@@ -414,7 +435,7 @@ export function MchangoModal({
             <button
               type="submit"
               disabled={submitting}
-              className="relative overflow-hidden group w-full py-4 px-6 rounded-full font-bold text-sm sm:text-base text-white bg-[#2563eb] shadow-[0_4px_24px_rgba(37,99,235,0.4)] hover:shadow-[0_6px_28px_rgba(37,99,235,0.5)] transition-all duration-300 active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer before:absolute before:inset-0 before:w-[120%] before:-left-[10%] before:bg-white/20 before:skew-x-[30deg] before:transition-transform before:duration-500 before:-translate-x-full hover:before:translate-x-full"
+              className="relative overflow-hidden group w-full py-3.5 px-6 rounded-full font-bold text-sm sm:text-base text-primary-foreground bg-primary hover:opacity-90 shadow-md transition-all duration-200 active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {submitting ? (
@@ -431,10 +452,10 @@ export function MchangoModal({
             </button>
 
             {/* Bottom Hint Banner */}
-            <div className="rounded-2xl border border-zinc-800/80 bg-zinc-900/60 p-3.5 text-center text-xs text-zinc-400 flex items-center justify-center gap-2">
+            <div className="rounded-2xl border border-border/80 bg-muted/40 p-3.5 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
               {paymentMethod === 'card' ? (
                 <>
-                  <Lock className="size-3.5 text-amber-400 shrink-0" />
+                  <Lock className="size-3.5 text-amber-500 shrink-0" />
                   <span>256-bit SSL encrypted. Audited background transaction.</span>
                 </>
               ) : (
@@ -454,35 +475,35 @@ export function MchangoModal({
           <div className="py-6 text-center space-y-6 animate-in zoom-in-95 duration-200">
             <div className="relative mx-auto size-20 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border border-emerald-500/40 animate-ping opacity-60" />
-              <Loader2 className="size-9 text-emerald-400 animate-spin" />
+              <Loader2 className="size-9 text-emerald-500 animate-spin" />
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xl font-black font-display text-white">
+              <h3 className="text-xl font-black font-display text-foreground">
                 Check Your Phone
               </h3>
-              <p className="text-xs sm:text-sm text-zinc-300 max-w-xs mx-auto leading-relaxed">
-                We have sent an authorization request for <span className="font-bold text-white">KES {amount.toLocaleString()}</span> to <span className="font-mono font-bold text-emerald-400">{phone}</span>.
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-xs mx-auto leading-relaxed">
+                We have sent an authorization request for <span className="font-bold text-foreground">KES {amount.toLocaleString()}</span> to <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{phone}</span>.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-2 text-left text-xs">
-              <div className="flex justify-between items-center text-zinc-400">
+            <div className="p-4 rounded-2xl bg-muted/50 border border-border space-y-2 text-left text-xs">
+              <div className="flex justify-between items-center text-muted-foreground">
                 <span>Recipient</span>
-                <span className="font-semibold text-white">{currentParty.name}</span>
+                <span className="font-semibold text-foreground">{currentParty.name}</span>
               </div>
-              <div className="flex justify-between items-center text-zinc-400">
+              <div className="flex justify-between items-center text-muted-foreground">
                 <span>Amount</span>
-                <span className="font-bold text-emerald-400">KES {amount.toLocaleString()}</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">KES {amount.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between items-center text-zinc-400">
+              <div className="flex justify-between items-center text-muted-foreground">
                 <span>Ref Code</span>
-                <span className="font-mono text-[11px] text-zinc-400">{reference}</span>
+                <span className="font-mono text-[11px] text-foreground">{reference}</span>
               </div>
             </div>
 
-            <div className="text-xs text-zinc-400 flex items-center justify-center gap-2">
-              <RefreshCw className="size-3.5 animate-spin text-zinc-500" />
+            <div className="text-xs text-muted-foreground flex items-center justify-center gap-2">
+              <RefreshCw className="size-3.5 animate-spin text-muted-foreground" />
               <span>Awaiting confirmation ({countdown}s)...</span>
             </div>
 
@@ -492,7 +513,7 @@ export function MchangoModal({
                 if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
                 setStep('form');
               }}
-              className="text-xs text-zinc-400 hover:text-white underline cursor-pointer"
+              className="text-xs text-muted-foreground hover:text-foreground underline cursor-pointer"
             >
               Cancel or Change Number
             </button>
@@ -502,35 +523,35 @@ export function MchangoModal({
         {/* STEP 3: Payment Verified & Success */}
         {step === 'success' && (
           <div className="py-6 text-center space-y-6 animate-in zoom-in-95 duration-200">
-            <div className="mx-auto size-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+            <div className="mx-auto size-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="size-10" />
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-2xl font-black font-display text-white">
+              <h3 className="text-2xl font-black font-display text-foreground">
                 Contribution Confirmed!
               </h3>
-              <p className="text-xs text-zinc-300 max-w-xs mx-auto">
+              <p className="text-xs text-muted-foreground max-w-xs mx-auto">
                 Your civic contribution has been successfully processed and timestamped onto the public integrity ledger.
               </p>
             </div>
 
-            <div className="p-4 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-2.5 text-left text-xs">
-              <div className="flex justify-between items-center text-zinc-400">
+            <div className="p-4 rounded-2xl bg-muted/50 border border-border space-y-2.5 text-left text-xs">
+              <div className="flex justify-between items-center text-muted-foreground">
                 <span>Party</span>
-                <span className="font-semibold text-white">{currentParty.name}</span>
+                <span className="font-semibold text-foreground">{currentParty.name}</span>
               </div>
-              <div className="flex justify-between items-center text-zinc-400">
+              <div className="flex justify-between items-center text-muted-foreground">
                 <span>Amount Contributed</span>
-                <span className="font-bold text-emerald-400">KES {amount.toLocaleString()}</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">KES {amount.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between items-center text-zinc-400">
+              <div className="flex justify-between items-center text-muted-foreground">
                 <span>Audit Reference</span>
-                <span className="font-mono text-[11px] text-zinc-300 truncate max-w-[180px]">{reference}</span>
+                <span className="font-mono text-[11px] text-foreground truncate max-w-[180px]">{reference}</span>
               </div>
-              <div className="flex justify-between items-center text-zinc-400">
+              <div className="flex justify-between items-center text-muted-foreground">
                 <span>Status</span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">VERIFIED</span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">VERIFIED</span>
               </div>
             </div>
 
@@ -538,7 +559,7 @@ export function MchangoModal({
               <Link
                 href={`/${locale}/transparency`}
                 onClick={handleClose}
-                className="w-full py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-3 px-4 rounded-full bg-primary hover:opacity-90 text-primary-foreground font-semibold text-xs transition-opacity flex items-center justify-center gap-1.5"
               >
                 <span>View Transparency Ledger</span>
                 <ArrowRight className="size-3.5" />
@@ -546,7 +567,7 @@ export function MchangoModal({
               <button
                 type="button"
                 onClick={handleClose}
-                className="text-xs text-zinc-400 hover:text-white py-1 cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground py-1 cursor-pointer"
               >
                 Close
               </button>
@@ -557,15 +578,15 @@ export function MchangoModal({
         {/* STEP 4: Failed State */}
         {step === 'failed' && (
           <div className="py-6 text-center space-y-6 animate-in zoom-in-95 duration-200">
-            <div className="mx-auto size-16 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-red-400">
+            <div className="mx-auto size-16 rounded-full bg-destructive/20 border border-destructive/40 flex items-center justify-center text-destructive">
               <AlertCircle className="size-10" />
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-xl font-black font-display text-white">
+              <h3 className="text-xl font-black font-display text-foreground">
                 Payment Not Completed
               </h3>
-              <p className="text-xs text-zinc-400 max-w-xs mx-auto">
+              <p className="text-xs text-muted-foreground max-w-xs mx-auto">
                 {errorMessage || 'The payment prompt timed out or was declined on your phone.'}
               </p>
             </div>
@@ -577,14 +598,14 @@ export function MchangoModal({
                   setErrorMessage('');
                   setStep('form');
                 }}
-                className="w-full py-3 px-4 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-bold text-xs transition-colors cursor-pointer"
+                className="w-full py-3 px-4 rounded-full bg-primary hover:opacity-90 text-primary-foreground font-bold text-xs transition-opacity cursor-pointer"
               >
                 Try Again
               </button>
               <button
                 type="button"
                 onClick={handleClose}
-                className="text-xs text-zinc-400 hover:text-white py-1 cursor-pointer"
+                className="text-xs text-muted-foreground hover:text-foreground py-1 cursor-pointer"
               >
                 Cancel
               </button>
